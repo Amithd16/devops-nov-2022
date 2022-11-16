@@ -1,0 +1,36 @@
+ls <location>/<path>
+   list files and directories in a location 
+	
+	-l , list in long format (gives more details).
+	-r , list in reverse order 
+	-t , list based on timestamp 	
+
+touch 
+     used to create a empty file. 
+     if file not exists it will create a new empty file or 
+     if exists it will update the timestamp.
+
+mkdir <directory1> <directory2>
+     (make directory)
+	- To create a empty directory (Folder)	
+     - To create a complete path 
+	 	
+pwd 
+    - present working directory 	
+cd 
+      - change directory 	
+    .. (previous directory )
+     . (current directory )		
+
+tree 
+	sudo apt update 
+	sudo apt install -y tree 
+
+rm <path>
+     - Remove/Delete files and directories
+     To remove file 
+	rm <file_path>
+     To remove directory (-r)
+	rm -r <directory path> 			
+     To delete all files and directories 
+	rm -rf *		
