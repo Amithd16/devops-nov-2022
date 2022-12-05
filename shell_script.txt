@@ -1,0 +1,12 @@
+------------------ If condition -----------------------
+
+#!/bin/bash
+  
+if [[ $# -eq 2 ]]; then
+    echo "ADDITION OF $1 and $2 " 
+    echo "$1 + $2" | bc
+else
+    echo "Send only 2 parameters"       
+fi
+
+-------------------------------------------------------
