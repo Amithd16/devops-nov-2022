@@ -61,3 +61,97 @@ Just try
 	docker run -it -d -p 8080:8080 -p 50000:50000 --name jeknis_master -v /home/ubuntu/jenkins_home:/var/jenkins_home jenkins/jenkins:lts
 
 	docker logs -f jeknis_master
+
+Docker images 
+	1. To list images in the host machine 
+		docker images
+	
+	2. To download image to host / local machine from docker hub
+		docker pull <image_name>:<tag>
+	
+		docker pull ubuntu:18.04
+	   If we won't provide/use any tag then docker will use the default tag "latest"	
+
+	3. To delete docker image
+		docker rmi <image_name>:<tag>
+			 (OR)
+		docker rmi <image_id>
+		
+	4. Delete multiple images 
+		docker rmi <image_id1> <image_id2> ...
+
+	5. Delete images forcefully even if there is a container related to it.
+		docker rmi -f <image_id>
+	
+	6. To list only ids of images 
+		docker images -q 
+	
+	7. To delete all local images 
+		docker rmi $(docker images -q)
+	
+
+	To push a images to our own repository
+
+		1. Create a tag which matches our repository name 
+			image_name
+				<username>/<repository_name>:<tag>
+
+			docker tag <old_name>:<old_tag> <new_name>
+			
+		2. Login with docker account 
+			docker login 
+
+		3. Push the images to your own repository 
+			
+
+Docker containers 
+	To list all docker running containers 
+		docker ps 
+		   (OR)
+		docker container ls 
+
+	To list all docker containers (running, exited, paused ....)
+		docker ps -a
+		   (OR)
+		docker container ls -a
+		
+	To delete all docker containers except (running)
+		docker rm <conatiner_name> 
+		docker rm <container_id> 
+	
+	To stop all running container 
+		docker stop $(docker ps -q)	
+		
+	To delete a running docker container 
+		1. Forcefully delete 
+			docker rm -f <container_id>
+
+		2. Gracefully delete 
+			2a. docker stop <container_id>
+			2b. docker rm <container_id>
+				(OR)
+			To stop and delete running container in one-line
+				docker rm $(docker stop <container_id>) 
+						(OR)
+				docker stop <container_id> | xargs -I{} docker rm "{}"
+	
+	To list all stopped containers 
+		docker ps --filter "status=exited" -q
+
+	To delete all the stopped containers 	
+		docker rm $(docker ps --filter "status=exited" -q)
+
+	To login / To get into a container 
+		(To create a container docker run -it -d ubuntu /bin/bash)
+		docker attach <container_id>
+	
+	
+Assignment: Try docker cp, docker pause, docker exec   
+
+
+
+
+
+
+
+
