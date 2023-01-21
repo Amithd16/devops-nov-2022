@@ -1,0 +1,157 @@
+
+Docker 
+	Docker is one of the tools that used the idea of the isolated resources to 
+	create a container that allows applications to be packaged with all the 
+	dependencies installed and ran wherever we wanted.
+	
+	Docker can only run on Linux machines this means I cant install Dokcer directly on Windows or any other OS.
+	If I want install Docker on windows then I need to run a Linux VM in windows on top that I need to run Docker.
+
+Virtualization (VM)
+	- VM is way of running virtual OS on top a host OS using a special software called Hyperviser.
+	- VM directly shares the harware of the host OS. 
+
+					VM 					vs 			Containerisation 
+	1. Virtualization at hardware level  		1. Virtualization at OS level 
+	2. Heavyweight - consume more host 			2. Lightweight
+	   resources 	
+	3. VM useses hypervisor 					3. containerisation tool is used 
+	4. limited performace - Boot up time        4. Native performace - usualy boot 
+		is more which is in minutes 			   fast in seconds.
+	5. Cosumes more storage 					5. Shres OS storage means only uses 
+												   required storage.
+	6. Supports all OS 							6. Supports on Linux
+
+host machine 
+	This is the machine in which docker is running 
+
+Docker installation
+
+1. Update ubuntu 
+	sudo apt update 
+
+2. Install support packages for Docker
+	sudo apt-get install -y ca-certificates curl gnupg lab-release
+
+3. Need add key to download Docker 
+	sudo mkdir -p /etc/apt/keyrings
+	
+	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg	
+
+4. Add docker packages to apt repository 
+	echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+5. Install Docker 
+	sudo apt-get update
+ 	sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+
+Assignment: 1. Create docker hub account 
+
+Login to your hub account 
+	docker login 
+
+Just try 
+	STEP 1: create directory in /home/ubuntu/jenkins_home 
+
+	Try to run Jenkins 
+
+	docker run -it -d -p 8080:8080 -p 50000:50000 --name jeknis_master -v /home/ubuntu/jenkins_home:/var/jenkins_home jenkins/jenkins:lts
+
+	docker logs -f jeknis_master
+
+Docker images 
+	1. To list images in the host machine 
+		docker images
+	
+	2. To download image to host / local machine from docker hub
+		docker pull <image_name>:<tag>
+	
+		docker pull ubuntu:18.04
+	   If we won't provide/use any tag then docker will use the default tag "latest"	
+
+	3. To delete docker image
+		docker rmi <image_name>:<tag>
+			 (OR)
+		docker rmi <image_id>
+		
+	4. Delete multiple images 
+		docker rmi <image_id1> <image_id2> ...
+
+	5. Delete images forcefully even if there is a container related to it.
+		docker rmi -f <image_id>
+	
+	6. To list only ids of images 
+		docker images -q 
+	
+	7. To delete all local images 
+		docker rmi $(docker images -q)
+	
+
+	To push a images to our own repository
+
+		1. Create a tag which matches our repository name 
+			image_name
+				<username>/<repository_name>:<tag>
+
+			docker tag <old_name>:<old_tag> <new_name>
+			
+		2. Login with docker account 
+			docker login 
+
+		3. Push the images to your own repository 
+			
+
+Docker containers 
+	To list all docker running containers 
+		docker ps 
+		   (OR)
+		docker container ls 
+
+	To list all docker containers (running, exited, paused ....)
+		docker ps -a
+		   (OR)
+		docker container ls -a
+		
+	To delete all docker containers except (running)
+		docker rm <conatiner_name> 
+		docker rm <container_id> 
+	
+	To stop all running container 
+		docker stop $(docker ps -q)	
+		
+	To delete a running docker container 
+		1. Forcefully delete 
+			docker rm -f <container_id>
+
+		2. Gracefully delete 
+			2a. docker stop <container_id>
+			2b. docker rm <container_id>
+				(OR)
+			To stop and delete running container in one-line
+				docker rm $(docker stop <container_id>) 
+						(OR)
+				docker stop <container_id> | xargs -I{} docker rm "{}"
+	
+	To list all stopped containers 
+		docker ps --filter "status=exited" -q
+
+	To delete all the stopped containers 	
+		docker rm $(docker ps --filter "status=exited" -q)
+
+	To login / To get into a container 
+		(To create a container docker run -it -d ubuntu /bin/bash)
+		docker attach <container_id>
+	
+	
+Assignment: Try docker cp, docker pause, docker exec   
+
+
+
+
+
+
+
+
