@@ -165,12 +165,14 @@ Assignment: Try docker cp, docker pause, docker exec
 		This command is used to run any command inside a running container and get the output.
 	
 To create a docker container 
-	docker run -it -d <image_name>:<tag> <command>
+	docker run -it -d -e <variable_name>=<variable_value> <image_name>:<tag> <command>
+	    
 	    Note: -i , interactive mode 
                   -t , tty terminal  		
 		  -d , detached mode (creating container in background)
 		  --name , User defined container name 
-		  --rm, Once the container stops it will be deleted.			
+		  --rm, Once the container stops it will be deleted.	
+		  -e, --env,  To create environment variable inside the container.  		
 		( Image name at the end of the command always. 
 		  If we want to add command for execution then command 
 		  should be at end followed by image name)
@@ -201,7 +203,11 @@ Dockerfile
 	     with each other.
 	
 		RUN <command>	
+	
 	WORKDIR 
+		This is used to set the working directory for all the instruction which follows it in the 
+		Dockerfile such as RUN, CMD, ENTRYPOINT ....
+			WORKDIR <path> 
 	
 	COPY and ADD 
 		COPY <source> <destination>
@@ -217,16 +223,66 @@ Dockerfile
 		- ADD instruction support 2 more extra formats 
 		     1. If source is a downloadable link, ADD will download the file to the destination.
 		     2. If it is compressed file, ADD will un-compresses it in the destination.	
+	
+	ENV
+		- This is used ti set the environment variable inside container through image.
+		- We can have multiple ENV instructions in a single Dockerfile.
+			ENV <variable_name> <variable_value>
+				(OR)
+			ENV <variable_name>=<variable_value>
 
+			Multiple variables 
+			    ENV <variable_name1>=<variable_value1> <variable_name2>=<variable_value2>
 
+		To create environment variable at RUN time.
+		    we can create using -e or --env option with docker run command 
+			docker run -e <variable_name>=<variable_value>
+		    	NOTE: For multiple env variables we can use multiple -e option.	
+				
+		For loading lot of multiple env variables, the best way is using env file.
+			STEP1: Add all the required env variable in a file (best name is .env)
+			STEP2: Using --env-file <env_file_path> option with docker run command we can load at once
+				docker run --env-file .env 	
+	
+	ARG 
+		using this we can pass parameters to Dockerfile as user inputs 
+			ARG <arg_var_name>=<default_value>
 
+		docker build -t <image_name> --build-arg <arg_var_name>=<value> .
 
+	CMD and ENTRYPOINT 
+		SHELL format 
+		   RUN ls -lrt 	
+		   CMD ls -lrt 
+		   ENTRYPOINT ls -lrt
 
+		EXEC format 
+			In list we represent the command and always the first event of list is command and other 
+			elements are treated as options to it.
+			 RUN ["ls","-lrt"] 	
+		   	 CMD ["ls","-lrt"] 
+		   	 ENTRYPOINT ["ls","-lrt"] 
+			
+	     - Both CMD & ENTRYPOINT are used to define the main execution command of container which will be 
+	       created from the Dockerfile.
+	     - If we have multiple CMD or ENTRYPOINT in the same Dockerfile only the latest one will be considered.
+	     - If we have both CMD and ENTRYPOINT then ENTRYPOINT will get the highest priority over CMD and the 
+	       CMD command will become as parameters to ENTRYPOINT.
 
-
-
-
-
-
-
-
+	     Difference 
+		- CMD command can be overridden at the runtime command (means with docker run command)
+		- ENTRYPOINT command can not be overridden at the runtime command but what ever the command we pass 
+		  at the runtime will become parameters to ENTRYPOINT command.
+		
+	Assignment: Can we override ENTRYPOINT at runtime ? (yes, How?)
+	
+	EXPOSE <port>	
+	
+	IQ: 
+		What is the difference b/w CMD and ENTRYPOINT ?	
+		What is the difference b/w COPY and ADD ?
+		What is the difference b/w EXPOSE and PUBLISH ?
+		What is the difference b/w ENV and ARG ?
+			
+Docker Network 
+		
