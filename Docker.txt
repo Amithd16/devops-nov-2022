@@ -172,7 +172,9 @@ To create a docker container
 		  -d , detached mode (creating container in background)
 		  --name , User defined container name 
 		  --rm, Once the container stops it will be deleted.	
-		  -e, --env,  To create environment variable inside the container.  		
+		  -e, --env,  To create environment variable inside the container.  
+		  -p, --publish <host_port>:<container_port>
+		  --network, Network in which we want container to be created		
 		( Image name at the end of the command always. 
 		  If we want to add command for execution then command 
 		  should be at end followed by image name)
@@ -277,12 +279,100 @@ Dockerfile
 	Assignment: Can we override ENTRYPOINT at runtime ? (yes, How?)
 	
 	EXPOSE <port>	
-	
+		- used to expose a port to the internal docker network 
+		- This makes the container port accessible by all the other containers in the 
+		  same docker network. 
+
 	IQ: 
 		What is the difference b/w CMD and ENTRYPOINT ?	
 		What is the difference b/w COPY and ADD ?
 		What is the difference b/w EXPOSE and PUBLISH ?
 		What is the difference b/w ENV and ARG ?
-			
-Docker Network 
+
+Dangling images 
+	Dangling images are images which are created while executing Dockerfile instructions 
+	in the image build process and these images have no relation with any other images or 
+	containers even they will not have repository and tag name.
+		To list only dangling images 
+			docker images -f dangling=true 
+		To delete dangling images 
+			docker image prune 
+				(OR)
+			docker rmi $(docker images -f dangling=true -q)
 		
+docker system prune
+	This will remove:
+  	- all stopped containers
+  	- all networks not used by at least one container
+  	- all dangling images
+ 	- all dangling build cache
+
+Docker Network 
+	
+	Publish 
+	   - Publish is used to bind the container port to any available host machine port.
+	   - publish will automatically exposes port 
+		
+		publish = EXPOSE + port mapping to the host machine port 	
+	     
+	     To publish a port 
+		docker run -p <host_port>:<container_port> .....	
+	     
+             -P publish_all 
+		It binds all the exposed ports of the container to random host machine port
+	     
+	     Range of ports 
+		Docker will search for available port in the range to bind to container port.
+		  1) many to one: docker run -p 8080-8090:8080
+		  2) many to many:  docker run -p 8080-8085:80-85
+			always the total number of host range ports should be same as container 
+			ports range 
+			 			
+            	
+    	To list docker networks 
+		docker network ls 
+	Bridge 
+	    - This is a private internal network created by docker on host machine by name 
+	      docker0
+	    - This is default network in docker which means when ever we create a container 
+              without any network configuration it will be created in default bridge network.
+	    - The default ip series is 172.17.0.1
+	    - All the container in the same bridge network can communicate by default using 
+	      the ip address of the containers.
+		
+	    Custom bridge network 
+		To create custom bridge network 
+			docker network create --drive bridge my_bride
+		The advantage of using custom bridge is we can communicate between containers 
+		using container name and also ip address as this will main an own ip table.
+
+Assignment: How to communicate between containers which in different bridge network.
+
+	2) HOST 
+		This driver removes the extra layer of network isolation between docker and host 			
+		machine.
+		- Container created in this network are directly connected to host network.
+		- They share the all the host network and got same configuration as host 
+		  machine.
+		- As we handle host network docker publish will not work with network driver.
+			
+
+	3) None
+		- Containers are not attached to any network and they will not be having 
+		  network configurations.
+		- All the required network configuration should be done manually.
+
+		
+	
+
+
+
+
+
+
+
+
+
+
+
+	
