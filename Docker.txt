@@ -362,15 +362,35 @@ Assignment: How to communicate between containers which in different bridge netw
 		  network configurations.
 		- All the required network configuration should be done manually.
 
+Docker volumes 
+			
+	Bind mounts 
+		- We can mount host machine filesystem (files and directors) to a container.
+		- If path inside container not present docker will automatically creates it.
 		
+		docker run -v <host_path>:<container_path>
 	
+	Volumes 
+		- These are docker managed filesystem and we use docker commands to manage these 
+		  volumes.
+		- We can mount the volumes to multiple containers.
+		- Volumes are easier to manage, backup or migrate than bind mounts.
+		- Volumes supports multiple drivers which means we can mount.
+		- Default location of docker volume /var/lib/docker/volumes 
+		To create a docker volume 
+			docker volume create <volume_name>
+		To list docker volumes 
+			docker volume ls
+		To delete docker volume
+			docker volume rm <volume_name>
 
+		docker run -v <volume_name>:<container_path>
 
-
-
-
-
-
+docker volume create \
+    --driver local \
+    --opt type=nfs \
+    --opt o=addr=fs-0928767bcf17c9ed6.efs.ap-south-1.amazonaws.com,rw,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 \
+    --opt device=:/ efs 	
 
 
 
