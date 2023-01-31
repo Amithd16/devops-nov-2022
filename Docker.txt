@@ -307,8 +307,7 @@ docker system prune
   	- all dangling images
  	- all dangling build cache
 
-Docker Network 
-	
+Docker Network
 	Publish 
 	   - Publish is used to bind the container port to any available host machine port.
 	   - publish will automatically exposes port 
@@ -386,13 +385,101 @@ Docker volumes
 
 		docker run -v <volume_name>:<container_path>
 
+
 docker volume create \
     --driver local \
     --opt type=nfs \
     --opt o=addr=fs-0928767bcf17c9ed6.efs.ap-south-1.amazonaws.com,rw,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 \
     --opt device=:/ efs 	
 
+Docker container lifecycle - stages - statuses 
+	Running - If main command is running without any error then container will get this state 
+	Exited - If main command / process of the container failed due to some error 
+	Paused - If we pause a container 
+	Created - If container is created but the main command is not yet started.
+	Dead - If Docker daemon fail to create / stop the container (Due to full RAM usage of 
+	       host machine)
+	Restarting - When we restart the main command of container.
 
+
+Namespaces and cgroups
+	- Docker uses linux namespaces to provide isolated workspace for processes called
+	  conatainer
+	- when a container is created, docker creates a set of namespaces for it and provides 
+	  a layer of isolation for container.
+	- Each container run in a different namespace 
+	
+	namespace (To list - lsns)
+		cgroups 
+			- Linux OS uses cgroups to manage the availale hardware resoruces such as 
+			  cpu, RAM, Disk, I/O.
+			- we can control tje access and also we can apply the limitations 
+
+			To list - lscgroup	
+		pid - namespace for managing processes (process isolation)
+		user - namespace for non-root user on linux.
+		uts - namespace for unix timesharing system which isolates kernel and version identifiers,
+			  time bonding of process.
+		ipc - (interprocess communication) namespace for managing the process communication.	  
+		mnt - namespace for managing filesystem mounts.
+		net - namespace for managing network interfaces.
+
+
+Docker Architecture 
+
+	Docker Daemon 
+		- A background process that manages docker images, containers, network and volumes.
+		- This Daemon constantly listens for docker API request and processes them.
+	
+	Docker REST API 
+		- API which is used by applications to interact with the docker daemon. 
+		
+	Docker CLI 
+		- It is a command line interface for interacting with docker daemon through
+		  REST api.
+	
+	Docker Objects 
+		- Images, Containers, Networks, Vloumes
+
+Benefits of Docker 
+
+	Flexible: 
+		Complex applications cab be divided and containerised in small competents called 
+		microservice. 
+	
+	Lightweight: 
+		Containers share the machine’s OS system kernel and therefore do not require 
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Docker multistage build	
+	
 
 
 	
