@@ -50,12 +50,13 @@ Kubernetes Installation
 			a. mkdir -p $HOME/.kube
 			b. sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 			c. sudo chown $(id -u):$(id -g) $HOME/.kube/config
-
 	15. For now open all ports in master 
+	
+	
 		
 	16. Now Install k8s CNI driver
 			1. sudo sysctl net.bridge.bridge-nf-call-iptables=1
-			2. kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+			2. kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 						
 	17. Login to worker nodes 
 		a. sudo su -
@@ -68,4 +69,9 @@ Kubernetes Installation
 		
 	18. In master node check for the worker nodes.
 		kubectl get nodes 
+		
+		IF we get error <host>:6443 was refused 
+			1. sudo systemctl stop kubelet
+			2. sudo systemctl start kubelet
+	
 
