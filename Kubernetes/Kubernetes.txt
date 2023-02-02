@@ -62,3 +62,17 @@ kubernetes Architecture
 
 
 Assignment: What happens when a new pod request comes to (control plane / Master node) ? 
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -13,11 +13,18 @@ Kubernetes Installation
 	9. sudo systemctl start docker 
 	10. sudo systemctl enable docker.service 
 	
-	11. sudo apt-get install -y kubelet=1.25.5-00 kubeadm kubectl kubernetes-cni
+	11. sudo apt-get install -y kubeadm kubelet=1.25.5-00 kubectl=1.25.5-00 kubernetes-cni
 	
-	12. Login back to master node,  make sure below steps are executed before running kubeadm init 
-		1. sudo su - 
-		2. docker cgroup driver configuration need to be updated 
+	12.	Install 1.6 containers
+		sudo su -
+		wget https://github.com/containerd/containerd/releases/download/v1.6.12/containerd-1.6.12-linux-amd64.tar.gz
+		tar xvf containerd-1.6.12-linux-amd64.tar.gz
+		systemctl stop containerd
+		cd bin
+		cp * /usr/bin/
+		systemctl start containerd
+		
+		b. docker cgroup driver configuration need to be updated 
 			1. add the below content to the file /etc/docker/daemon.json
 				{
 				  "exec-opts": ["native.cgroupdriver=systemd"]
@@ -25,7 +32,6 @@ Kubernetes Installation
 			2. systemctl daemon-reload
 			   systemctl restart docker 
 
-			   systemctl restart kubectl (optional for first time)	
 	
 	Take ami from the above ec2 instances to create worker nodes 
 		
