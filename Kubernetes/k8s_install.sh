@@ -1,13 +1,13 @@
 #!/bin/bash
 kubeconfig_path=''
 function unkown_option() {
-echo "Unknown K8S node type: $1"; 
+echo -e "\nUnknown K8S node type: $1 \n"; 
+echo "--------------------------------------------------------------------------"
 echo "    This bash script will setup K8S cluster using kubeadm"
 echo "       preffered Ubuntu 20.04_LTS with bellow requirement"
 echo "       Master node:  minimum - 2GB RAM & 2Core CPU" 
 echo "       Worker node:  Any"
 echo "------------------------------ Master setup ------------------------------"
-echo "       "
 echo "    curl -s <url> | sudo bash -s master"
 echo "       Save the kubeadm join <token> command to run on worker node"
 echo "------------------------------ Master setup ------------------------------"
