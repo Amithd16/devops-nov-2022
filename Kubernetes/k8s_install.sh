@@ -2,9 +2,12 @@
 
 function unkown_option() {
 echo "Unknown option $1 -s $2"; 
-echo -e "    This bash script will setup K8S cluster using kubeadm \n       (preffered Ubuntu 20.04_LTS)"
+echo "    This bash script will setup K8S cluster using kubeadm"
+echo "       preffered Ubuntu 20.04_LTS with bellow requirement"
+echo "       Master node:  minimum - 2GB RAM & 2Core CPU" 
+echo "       Worker node:  Any"
 echo "------------------------------ Master setup ------------------------------"
-echo "       Minimum requirement for master node (2GB RAM and 2 Core CPU)"
+echo "       "
 echo "    FOR mater node setup: curl -s <url> | sudo bash -s master"
 echo "       Save the kubeadm join <token> command to run on worker node"
 echo "------------------------------ Master setup ------------------------------"
