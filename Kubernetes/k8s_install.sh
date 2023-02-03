@@ -89,15 +89,10 @@ echo "       Save the above kubeadm join <token> command to run on worker node"
 echo "--------------------------------------------------------------------------"
 echo -e "\n-------------------------- Setiing-up Kubeconfig  --------------------------\n"
 sleep 4
-#mkdir -p $kubeconfig_path/.kube
 mkdir -p $HOME/.kube
-#sudo cp -i /etc/kubernetes/admin.conf $kubeconfig_path/.kube/config 
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config 
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
-#sudo chown 1000:1000 $kubeconfig_path/.kube/config
-#[[ -f "$kubeconfig_path/.kube/config" ]] || echo "     Kubeconfig copied $kubeconfig_path/.kube/config"
-
-sudo sysctl net.bridge.bridge-nf-call-iptables=1
+[[ -f "$HOME/.kube/config" ]] || echo "     Kubeconfig copied $HOME/.kube/config"
 
 echo -e "\n-------------------------- Copy the join <token> command --------------------------\n" 
 echo "    We need to run this command in the worker node which we need to add to this node "
