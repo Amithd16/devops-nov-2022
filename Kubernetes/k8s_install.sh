@@ -64,8 +64,8 @@ sudo apt install -y docker.io
 
 sudo su - <<EOF
 echo -e "\n-------------------------- Updating container.io --------------------------\n"
-wget https://github.com/containerd/containerd/releases/download/v1.6.12/containerd-1.6.12-linux-amd64.tar.gz
-tar xvf containerd-1.6.12-linux-amd64.tar.gz
+wget -q https://github.com/containerd/containerd/releases/download/v1.6.12/containerd-1.6.12-linux-amd64.tar.gz
+tar -xf containerd-1.6.12-linux-amd64.tar.gz
 systemctl stop containerd
 cd bin
 cp * /usr/bin/
