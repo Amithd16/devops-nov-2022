@@ -1,5 +1,5 @@
 #!/bin/bash
-
+echo $USER
 function unkown_option() {
 echo "Unknown option $1 -s $2"; 
 echo "    This bash script will setup K8S cluster using kubeadm"
