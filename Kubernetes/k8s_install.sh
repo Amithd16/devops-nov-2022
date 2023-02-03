@@ -8,10 +8,10 @@ echo "       preffered Ubuntu 20.04_LTS with bellow requirement"
 echo "       Master node:  minimum - 2GB RAM & 2Core CPU" 
 echo "       Worker node:  Any"
 echo "------------------------------ Master setup ------------------------------"
-echo "    curl -s <url> | sudo bash -s master"
+echo "    curl -s <url> | bash -s master"
 echo "       Save the kubeadm join <token> command to run on worker node"
 echo "------------------------------ Master setup ------------------------------"
-echo "    curl -s <url> | sudo bash -s worker"
+echo "    curl -s <url> | bash -s worker"
 echo "       Run the kubeadm join <token> command which we get from master node"
 echo "--------------------------------------------------------------------------"
 }
@@ -117,10 +117,11 @@ echo -e "\n---------------------------------------------------------------------
 fi  
 
 if [[ "$1" == 'worker' ]]; then 
+sudo su -
 echo "------------------------------------------------------------------------------------"
-echo "    switch to root user: sudo su -"
+#echo "    switch to root user: sudo su -"
 echo "    Allow incoming traffic to port 6443 in master node" 
 echo "    Run the kubeadm join <TOKEN> command which we get from master"
-echo "    Run 'kubectl get nodes' on the control-plane to see this node joined the cluster."
+#echo "    Run 'kubectl get nodes' on the control-plane to see this node joined the cluster."
 echo "------------------------------------------------------------------------------------"
 fi
