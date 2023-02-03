@@ -1,5 +1,5 @@
 #!/bin/bash
-echo $USER
+kubeconfig_path='/home/ubuntu'
 function unkown_option() {
 echo "Unknown K8S node type: $1"; 
 echo "    This bash script will setup K8S cluster using kubeadm"
@@ -69,11 +69,11 @@ EOF
 
 echo -e "\n-------------------------- Setiing-up Kubeconfig  --------------------------\n"
 sleep 4
-if [[ -d "/home/ubuntu" ]]; then 
-mkdir -p /home/ubuntu/.kube
-sudo cp -i /etc/kubernetes/admin.conf /home/ubuntu/.kube/config 
-sudo chown $(id -u):$(id -g) /home/ubuntu/.kube/config
-[[ -f "/home/ubuntu/.kube/config" ]] || echo "     Kubeconfig copied /home/ubuntu/.kube/config"
+if [[ -d "$kubeconfig_path" ]]; then 
+mkdir -p $kubeconfig_path/.kube
+sudo cp -i /etc/kubernetes/admin.conf $kubeconfig_path/.kube/config 
+sudo chown $(id -u):$(id -g) $kubeconfig_path/.kube/config
+[[ -f "$kubeconfig_path/.kube/config" ]] || echo "     Kubeconfig copied $kubeconfig_path/.kube/config"
 else 
 echo "     Failed to setup Kubeconfig"
 fi
