@@ -19,7 +19,7 @@ echo "--------------------------------------------------------------------------
 [[ "$1" == "--help" || "$1" == "help" || "$1" == "-h" ]] && { unkown_option; exit 0;}
 
 read -p "    Enter the type node to setup (master / worker): " ntype
-ntype="$(echo "$ntype" | awk '{print tolower($0)}')"
+ntype=$(echo "$ntype" | awk '{print tolower($0)}')
 if [[ "$ntype" == 'master' ]]; then 
 echo -e "\n-------------------------- K8S Master node setup --------------------------"
 elif [[ "$ntype" == 'worker' ]]; then 
