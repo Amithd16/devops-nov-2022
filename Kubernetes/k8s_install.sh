@@ -17,24 +17,26 @@ echo "--------------------------------------------------------------------------
 }
 
 UNAME=$(uname | tr "[:upper:]" "[:lower:]")
-[[ "$UNAME" == 'linux' ]] || { echo "    Not a Linux platform ..."; exit 1; }
 # If Linux, try to determine specific distribution
 if [ "$UNAME" == "linux" ]; then
     # If available, use LSB to identify distribution
+    DISTRO=''
     if [ -f /etc/lsb-release -o -d /etc/lsb-release.d ]; then
-        DISTRO=$(lsb_release -i | cut -d: -f2 | sed s/'^\t'//)
+        DISTRO=$(lsb_release -i | cut -d: -f2 | sed s/'^\t'// | tr "[:upper:]" "[:lower:]")
     else
-        DISTRO=$(ls -d /etc/[A-Za-z]*[_-][rv]e[lr]* | grep -v "lsb" | cut -d'/' -f3 | cut -d'-' -f1 | cut -d'_' -f1)
+        DISTRO=$(ls -d /etc/[A-Za-z]*[_-][rv]e[lr]* | grep -v "lsb" | cut -d'/' -f3 | cut -d'-' -f1 | cut -d'_' -f1 | tr "[:upper:]" "[:lower:]")
     fi
     
-    if [[ "$DISTOR" == "Ubuntu" ]]; then  
+    if [[ "$DISTOR" == "ubuntu" ]]; then  
         kubeconfig_path='/home/ubuntu' 
-    elif [[ "$DISTOR" == "RHEL" ]]; then
+    elif [[ "$DISTOR" == "rhel" ]]; then
         kubeconfig_path='/home/ec2-user'
     else 
         echo "   Linux is not either Ubuntu nor RHEL"
         exit 1
-    fi   
+    fi  
+else 
+    echo "    Not a Linux platform ..."; exit 1; 
 fi
 
 [[ "$1" == "--help" || "$1" == "help" || "$1" == "-h" ]] && { unkown_option; exit 0;}
