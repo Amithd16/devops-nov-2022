@@ -99,8 +99,8 @@ echo "            kubeadm token create --print-join-command"
 echo -e "\n-----------------------------------------------------------------------------------\n"
 
 echo -e "\n-------------------------- Install weaveworks network cni --------------------------\n"
-kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
-#kubectl apply -f https://docs.projectcalico.org/manifests/calico-typha.yaml 
+#kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+kubectl apply -f https://docs.projectcalico.org/manifests/calico-typha.yaml 
 
 echo -e "\n---------------------------------- Checking mater node status ---------------------------\n"
 kubectl get nodes
