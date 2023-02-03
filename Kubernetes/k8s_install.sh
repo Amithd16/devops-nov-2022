@@ -1,5 +1,5 @@
 #!/bin/bash
-[[ -z "$1" ]] && { echo "Enter the mode $0 <master>/<worker>"; exit 1; }
+[[ -z "$1" ]] && { echo "Enter the node type $0 -s master / worker"; exit 1; }
 
 sudo apt update
 sudo apt-get install -y apt-transport-https
