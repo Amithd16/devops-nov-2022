@@ -1,6 +1,5 @@
 #!/bin/bash
-home_path=$HOME
-echo $HOME
+
 function unkown_option() {
 echo "Unknown option $1 -s $2"; 
 echo "    This bash script will setup K8S cluster using kubeadm"
@@ -69,10 +68,10 @@ EOF
 echo -e "\n-------------------------- Setiing-up Kubeconfig  --------------------------\n"
 sleep 4
 if [[ -d "$home_path" ]]; then 
-mkdir -p $home_path/.kube
-sudo cp -i /etc/kubernetes/admin.conf $home_path/.kube/config 
-sudo chown $(id -u):$(id -g) $home_path/.kube/config
-[[ -f "$home_path/.kube/config" ]] || echo "     Kubeconfig copied $home_path/.kube/config"
+mkdir -p /home/ubuntu/.kube
+sudo cp -i /etc/kubernetes/admin.conf /home/ubuntu/.kube/config 
+sudo chown $(id -u):$(id -g) /home/ubuntu/.kube/config
+[[ -f "/home/ubuntu/.kube/config" ]] || echo "     Kubeconfig copied /home/ubuntu/.kube/config"
 else 
 echo "     Failed to setup Kubeconfig"
 fi
