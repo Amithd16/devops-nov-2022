@@ -67,7 +67,7 @@ EOF
 
 echo -e "\n-------------------------- Setiing-up Kubeconfig  --------------------------\n"
 sleep 4
-if [[ -d "$home_path" ]]; then 
+if [[ -d "/home/ubuntu" ]]; then 
 mkdir -p /home/ubuntu/.kube
 sudo cp -i /etc/kubernetes/admin.conf /home/ubuntu/.kube/config 
 sudo chown $(id -u):$(id -g) /home/ubuntu/.kube/config
