@@ -124,6 +124,8 @@ fi
 if [[ "$1" == 'worker' ]]; then 
 echo "------------------------------------------------------------------------------------"
 echo "    switch to root user: sudo su -"
+echo "    Allow incoming traffic to port 6443 in master node" 
 echo "    Run the kubeadm join <TOKEN> command which we get from master"
+echo "    Run 'kubectl get nodes' on the control-plane to see this node joined the cluster."
 echo "------------------------------------------------------------------------------------"
 fi
