@@ -123,6 +123,7 @@ fi
 
 if [[ "$1" == 'worker' ]]; then 
 echo "------------------------------------------------------------------------------------"
-echo "  Run the kubeadm join <TOKEN> command which we get from kubeadm init from master"
+echo "    switch to root user: sudo su -"
+echo "    Run the kubeadm join <TOKEN> command which we get from master"
 echo "------------------------------------------------------------------------------------"
 fi
