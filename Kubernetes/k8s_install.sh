@@ -61,10 +61,12 @@ sudo su - <<EOF
 kubeadm init
 EOF
 
-mkdir -p $HOME/.kube &>/dev/null
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config &>/dev/null
-sudo chown $(id -u):$(id -g) $HOME/.kube/config &>/dev/null
-
+echo -e "\n-------------------------- Kubeconfig setup --------------------------\n"
+sleep 4
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config 
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+[[ -d "$HOME/.kube" ]] || echo "     Failed to setup Kubeconfig"
 
 sudo sysctl net.bridge.bridge-nf-call-iptables=1 &>/dev/null
 
