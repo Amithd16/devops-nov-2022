@@ -16,27 +16,24 @@ echo "       Run the kubeadm join <token> command which we get from master node"
 echo "--------------------------------------------------------------------------"
 }
 
+# Check if the machine Linux and Distor is Ubuntu or RHEL(RedHat)
 UNAME=$(uname | tr "[:upper:]" "[:lower:]")
 # If Linux, try to determine specific distribution
 if [ "$UNAME" == "linux" ]; then
     # If available, use LSB to identify distribution
-    DISTRO=''
     if [ -f /etc/lsb-release -o -d /etc/lsb-release.d ]; then
-        DISTRO=$(lsb_release -i | cut -d: -f2 | sed s/'^\t'// | tr "[:upper:]" "[:lower:]")
-    else
-        DISTRO=$(ls -d /etc/[A-Za-z]*[_-][rv]e[lr]* | grep -v "lsb" | cut -d'/' -f3 | cut -d'-' -f1 | cut -d'_' -f1 | tr "[:upper:]" "[:lower:]")
-    fi
-    
-    if [[ "$DISTOR" == "ubuntu" ]]; then  
         kubeconfig_path='/home/ubuntu' 
-    elif [[ "$DISTOR" == "rhel" ]]; then
+    elif [[ -f /etc/redhat-release ]]; then
         kubeconfig_path='/home/ec2-user'
     else 
-        echo "   Linux is not either Ubuntu nor RHEL"
-        exit 1
+        echo -e "   Linux is not either Ubuntu nor RHEL.... \n"; 
+        unkown_option
+        exit 1; 
     fi  
 else 
-    echo "    Not a Linux platform ..."; exit 1; 
+    echo -e "    Not a Linux platform ... \n"; 
+    unkown_option
+    exit 1; 
 fi
 
 [[ "$1" == "--help" || "$1" == "help" || "$1" == "-h" ]] && { unkown_option; exit 0;}
