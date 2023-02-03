@@ -1,7 +1,5 @@
 #!/bin/bash
 home_path=$HOME
-echo "$HOME"
-exit 0
 function unkown_option() {
 echo "Unknown option $1 -s $2"; 
 echo "    This bash script will setup K8S cluster using kubeadm"
