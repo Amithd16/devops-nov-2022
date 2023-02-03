@@ -84,7 +84,9 @@ echo -e "\n-------------------------- Initiating kubeadm (master node) ---------
 sudo su - <<EOF
 kubeadm init
 EOF
-
+echo "--------------------------------------------------------------------------"
+echo "       Save the above kubeadm join <token> command to run on worker node"
+echo "--------------------------------------------------------------------------"
 echo -e "\n-------------------------- Setiing-up Kubeconfig  --------------------------\n"
 sleep 4
 #mkdir -p $kubeconfig_path/.kube
@@ -124,6 +126,7 @@ sudo su - <<EOF
 systemctl daemon-reload 
 systemctl restart docker 
 EOF
-
-echo "Run the kubeadm join <TOKEN> command which we get from kubeadm init from master"
+echo "------------------------------------------------------------------------------------"
+echo "  Run the kubeadm join <TOKEN> command which we get from kubeadm init from master"
+echo "------------------------------------------------------------------------------------"
 fi
