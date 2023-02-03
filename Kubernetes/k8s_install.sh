@@ -17,7 +17,7 @@ echo "--------------------------------------------------------------------------
 }
 
 # Check if the machine Linux and Distor is Ubuntu or RHEL(RedHat)
-UNAME="${UNAME,,}"
+UNAME=$(uname | tr "[:upper:]" "[:lower:]")
 # If Linux, try to determine specific distribution
 if [ "$UNAME" == "linux" ]; then
     # If available, use LSB to identify distribution
