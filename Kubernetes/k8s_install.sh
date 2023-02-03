@@ -1,12 +1,26 @@
 #!/bin/bash
-[[ -z "$1" ]] && { echo "Enter the node type $0 -s master / worker"; exit 1; }
+
+function unkown_option() {
+echo "Unknown option $1 -s $2"; 
+echo "       This bash script will setup K8S cluster using kubeadm"
+echo "------------------------------ Master setup ------------------------------"
+echo "       FOR mater node setup: curl -s <url> | sudo bash -s master"
+echo "          Save the kubeadm join <token> command to run on worker node"
+echo "------------------------------ Master setup ------------------------------"
+echo "       FOR worker node setup: curl -s <url> | sudo bash -s worker"
+echo "          Run the kubeadm join <token> command which we get from master node"
+echo "--------------------------------------------------------------------------"
+exit 1;
+}
+
+[[ -z "$1" ]] && { unkown_option $0 $1; }
 
 if [[ "$1" == 'master' ]]; then 
 echo -e "\n-------------------------- K8S Master node setup --------------------------\n\n"
 elif [[ "$1" == 'worker' ]]; then 
 echo -e "\n-------------------------- K8S Worker node setup --------------------------\n\n"
 else 
-echo "Unknown option $0 -s $1"; exit 1;
+unkown_option $0 $1
 fi
 
 echo -e "\n-------------------------- Update OS --------------------------\n\n"
