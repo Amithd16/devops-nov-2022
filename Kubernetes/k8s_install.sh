@@ -1,6 +1,5 @@
 #!/bin/bash
 kubeconfig_path=''
-echo "1 $USER"
 function unkown_option() {
 echo -e "\nUnknown K8S node type: $1 \n"; 
 echo "--------------------------------------------------------------------------"
@@ -54,7 +53,6 @@ echo -e "\n-------------------------- APT transport for downloading pkgs via HTT
 sudo apt-get install -y apt-transport-https
 
 sudo su - <<EOF
-echo "2 $USER"
 echo -e "\n--------------------------  Adding K8S packgaes to APT list --------------------------\n"
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
 echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' > /etc/apt/sources.list.d/kubernetes.list
@@ -89,13 +87,13 @@ EOF
 
 echo -e "\n-------------------------- Setiing-up Kubeconfig  --------------------------\n"
 sleep 4
-mkdir -p $kubeconfig_path/.kube
+#mkdir -p $kubeconfig_path/.kube
 mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $kubeconfig_path/.kube/config 
+#sudo cp -i /etc/kubernetes/admin.conf $kubeconfig_path/.kube/config 
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config 
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
-sudo chown 1000:1000 $kubeconfig_path/.kube/config
-[[ -f "$kubeconfig_path/.kube/config" ]] || echo "     Kubeconfig copied $kubeconfig_path/.kube/config"
+#sudo chown 1000:1000 $kubeconfig_path/.kube/config
+#[[ -f "$kubeconfig_path/.kube/config" ]] || echo "     Kubeconfig copied $kubeconfig_path/.kube/config"
 
 sudo sysctl net.bridge.bridge-nf-call-iptables=1
 
