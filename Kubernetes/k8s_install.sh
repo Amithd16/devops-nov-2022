@@ -1,5 +1,5 @@
 #!/bin/bash
-kubeconfig_path='/home/ubuntu'
+kubeconfig_path=''
 function unkown_option() {
 echo "Unknown K8S node type: $1"; 
 echo "    This bash script will setup K8S cluster using kubeadm"
@@ -15,6 +15,27 @@ echo "    Enter the type node to setup (master / worker): worker"
 echo "       Run the kubeadm join <token> command which we get from master node"
 echo "--------------------------------------------------------------------------"
 }
+
+UNAME=$(uname | tr "[:upper:]" "[:lower:]")
+[[ "$UNAME" == 'linux' ]] || { echo "    Not a Linux platform ..."; exit 1; }
+# If Linux, try to determine specific distribution
+if [ "$UNAME" == "linux" ]; then
+    # If available, use LSB to identify distribution
+    if [ -f /etc/lsb-release -o -d /etc/lsb-release.d ]; then
+        DISTRO=$(lsb_release -i | cut -d: -f2 | sed s/'^\t'//)
+    else
+        DISTRO=$(ls -d /etc/[A-Za-z]*[_-][rv]e[lr]* | grep -v "lsb" | cut -d'/' -f3 | cut -d'-' -f1 | cut -d'_' -f1)
+    fi
+    
+    if [[ "$DISTOR" == "Ubuntu" ]]; then  
+        kubeconfig_path='/home/ubuntu' 
+    elif [[ "$DISTOR" == "RHEL" ]]; then
+        kubeconfig_path='/home/ec2-user'
+    else 
+        echo "   Linux is not either Ubuntu nor RHEL"
+        exit 1
+    fi   
+fi
 
 [[ "$1" == "--help" || "$1" == "help" || "$1" == "-h" ]] && { unkown_option; exit 0;}
 
