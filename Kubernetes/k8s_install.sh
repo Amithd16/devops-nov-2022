@@ -2,13 +2,13 @@
 
 function unkown_option() {
 echo "Unknown option $1 -s $2"; 
-echo "       This bash script will setup K8S cluster using kubeadm (preffered Ubuntu 20.04_LTS)"
+echo -e "    This bash script will setup K8S cluster using kubeadm \n       (preffered Ubuntu 20.04_LTS)"
 echo "------------------------------ Master setup ------------------------------"
-echo "       FOR mater node setup: curl -s <url> | sudo bash -s master"
-echo "          Save the kubeadm join <token> command to run on worker node"
+echo "    FOR mater node setup: curl -s <url> | sudo bash -s master"
+echo "       Save the kubeadm join <token> command to run on worker node"
 echo "------------------------------ Master setup ------------------------------"
-echo "       FOR worker node setup: curl -s <url> | sudo bash -s worker"
-echo "          Run the kubeadm join <token> command which we get from master node"
+echo "    FOR worker node setup: curl -s <url> | sudo bash -s worker"
+echo "       Run the kubeadm join <token> command which we get from master node"
 echo "--------------------------------------------------------------------------"
 exit 1;
 }
