@@ -44,7 +44,9 @@ Kubernetes Installation
 			
 	15. Now Install k8s CNI driver
 			1. sudo sysctl net.bridge.bridge-nf-call-iptables=1
-			2. kubectl apply -f https://docs.projectcalico.org/manifests/calico-typha.yaml
+			2. kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+				If you get error then run calico driver 
+					kubectl apply -f https://docs.projectcalico.org/manifests/calico-typha.yaml
 						
 	17. Login to worker nodes 
 		a. sudo su -
