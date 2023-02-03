@@ -1,6 +1,13 @@
 #!/bin/bash
 [[ -z "$1" ]] && { echo "Enter the node type $0 -s master / worker"; exit 1; }
 
+if [[ "$1" == 'master' ]]; then 
+echo -e "\n-------------------------- K8S Master node setup --------------------------\n\n"
+elif [[ "$1" == 'worker' ]]; then 
+echo -e "\n-------------------------- K8S Worker node setup --------------------------\n\n"
+else 
+echo "Unknown option $0 -s $1"; exit 1;
+fi
 sudo apt update
 sudo apt-get install -y apt-transport-https
 
