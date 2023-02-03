@@ -38,9 +38,10 @@ fi
 
 [[ "$1" == "--help" || "$1" == "help" || "$1" == "-h" ]] && { unkown_option; exit 0;}
 
-read -p "    Enter the type node to setup (master / worker): " ntype
+echo "    Enter the type node to setup (master / worker): " 
+read ntype
 ntype=${ntype,,}
-echo "$ntype"
+
 if [[ "$ntype" == 'master' ]]; then 
 echo -e "\n-------------------------- K8S Master node setup --------------------------"
 elif [[ "$ntype" == 'worker' ]]; then 
