@@ -122,10 +122,6 @@ echo -e "\n---------------------------------------------------------------------
 fi  
 
 if [[ "$1" == 'worker' ]]; then 
-sudo su - <<EOF
-systemctl daemon-reload 
-systemctl restart docker 
-EOF
 echo "------------------------------------------------------------------------------------"
 echo "  Run the kubeadm join <TOKEN> command which we get from kubeadm init from master"
 echo "------------------------------------------------------------------------------------"
