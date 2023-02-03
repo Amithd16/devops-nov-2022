@@ -1,5 +1,5 @@
 #!/bin/bash
-
+home_path=$HOME
 function unkown_option() {
 echo "Unknown option $1 -s $2"; 
 echo "    This bash script will setup K8S cluster using kubeadm"
@@ -67,17 +67,22 @@ EOF
 
 echo -e "\n-------------------------- Kubeconfig setup --------------------------\n"
 sleep 4
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config 
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
-[[ -d "$HOME/.kube" ]] || echo "     Failed to setup Kubeconfig"
+if [[ -d "$home_path" ]]; then 
+mkdir -p $home_path/.kube
+sudo cp -i /etc/kubernetes/admin.conf $home_path/.kube/config 
+sudo chown $(id -u):$(id -g) $home_path/.kube/config
+[[ -f "$home_path/.kube/config" ]] || echo "     Kubeconfig copied $home_path/.kube/config"
+else 
+echo "     Failed to setup Kubeconfig"
+fi
+
 
 sudo sysctl net.bridge.bridge-nf-call-iptables=1 &>/dev/null
 
 echo -e "\n-------------------------- Copy the join <token> command --------------------------\n" 
-echo "       We need to run this command in the worker node which we need to add to this node "
-echo "         (Better save the join command in a seperate file for future use )"
-echo "          To generate new join command:  kubeadm token create --print-join-command"
+echo "    We need to run this command in the worker node which we need to add to this node "
+echo "      1. (Better save the join command in a seperate file for future use )"
+echo "      2. To generate new join command:  kubeadm token create --print-join-command"
 echo -e "\n-----------------------------------------------------------------------------------\n"
 
 echo -e "\n-------------------------- Install weaveworks network cni --------------------------\n"
@@ -86,9 +91,13 @@ kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/we
 
 echo -e "\n---------------------------------- Node List ---------------------------\n"
 kubectl get nodes
-echo "       Note: if node is not in Ready state then try to install below calico network cni "
-echo "                  RUN: kubectl apply -f https://docs.projectcalico.org/manifests/calico-typha.yaml"
-echo "                  RUN: kubectl get nodes"
+echo -e "\n Waiting to master node to get Ready ..........."
+sleep 15
+kubectl get nodes
+echo
+echo "    Note: wait to for 5-10 minutes, if node is still not in Ready state then try to install below calico network cni "
+echo "          RUN: kubectl apply -f https://docs.projectcalico.org/manifests/calico-typha.yaml"
+echo "          RUN: kubectl get nodes"
 echo -e "\n-----------------------------------------------------------------------------------"
 fi  
 
