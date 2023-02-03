@@ -8,10 +8,10 @@ echo "       Master node:  minimum - 2GB RAM & 2Core CPU"
 echo "       Worker node:  Any"
 echo "------------------------------ Master setup ------------------------------"
 echo "       "
-echo "    Enter the type node to setup (master / worker): master"
+echo "    curl -s <url> | sudo bash -s master"
 echo "       Save the kubeadm join <token> command to run on worker node"
 echo "------------------------------ Master setup ------------------------------"
-echo "    Enter the type node to setup (master / worker): worker"
+echo "    curl -s <url> | sudo bash -s worker"
 echo "       Run the kubeadm join <token> command which we get from master node"
 echo "--------------------------------------------------------------------------"
 }
@@ -38,17 +38,13 @@ fi
 
 [[ "$1" == "--help" || "$1" == "help" || "$1" == "-h" ]] && { unkown_option; exit 0;}
 
-echo "    Enter the type node to setup (master / worker): " 
-read ntype
-ntype=${ntype,,}
-
-if [[ "$ntype" == 'master' ]]; then 
+if [[ "$1" == 'master' ]]; then 
 echo -e "\n-------------------------- K8S Master node setup --------------------------"
-elif [[ "$ntype" == 'worker' ]]; then 
+elif [[ "$1" == 'worker' ]]; then 
 echo -e "\n-------------------------- K8S Worker node setup --------------------------"
 else 
-unkown_option $ntype
-exit 0
+unkown_option $1
+exit 1
 fi
 
 echo -e "\n-------------------------- Updating OS --------------------------\n"
@@ -83,7 +79,7 @@ sudo systemctl enable docker.service && echo "    docker.service enabled"
 echo -e "\n-------------------------- Install kubeadm, kubelet, kubectl and kubernetes-cni --------------------------\n"
 sudo apt-get install -y kubeadm kubelet=1.25.5-00 kubectl kubernetes-cni
 
-if [[ "$ntype" == 'master' ]]; then 
+if [[ "$1" == 'master' ]]; then 
 echo -e "\n-------------------------- Initiating kubeadm (master node) --------------------------\n"
 sudo su - <<EOF
 kubeadm init
@@ -125,7 +121,7 @@ echo "          RUN: kubectl get nodes"
 echo -e "\n-----------------------------------------------------------------------------------"
 fi  
 
-if [[ "$ntype" == 'worker' ]]; then 
+if [[ "$1" == 'worker' ]]; then 
 sudo su - <<EOF
 systemctl daemon-reload 
 systemctl restart docker 
