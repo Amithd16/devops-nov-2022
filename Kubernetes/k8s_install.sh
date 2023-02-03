@@ -1,30 +1,31 @@
 #!/bin/bash
 echo $USER
 function unkown_option() {
-echo "Unknown option $1 -s $2"; 
+echo "Unknown K8S node type: $1"; 
 echo "    This bash script will setup K8S cluster using kubeadm"
 echo "       preffered Ubuntu 20.04_LTS with bellow requirement"
 echo "       Master node:  minimum - 2GB RAM & 2Core CPU" 
 echo "       Worker node:  Any"
 echo "------------------------------ Master setup ------------------------------"
 echo "       "
-echo "    FOR mater node setup: curl -s <url> | sudo bash -s master"
+echo "    Enter the type node to setup (master / worker): master"
 echo "       Save the kubeadm join <token> command to run on worker node"
 echo "------------------------------ Master setup ------------------------------"
-echo "    FOR worker node setup: curl -s <url> | sudo bash -s worker"
+echo "    Enter the type node to setup (master / worker): worker"
 echo "       Run the kubeadm join <token> command which we get from master node"
 echo "--------------------------------------------------------------------------"
-exit 1;
 }
 
-[[ -z "$1" ]] && { unkown_option $0 $1; }
+[[ "$1" == "--help" || "$1" == "help" || "$1" == "-h" ]] && { unkown_option; exit 0;}
 
-if [[ "$1" == 'master' ]]; then 
+read -p "    Enter the type node to setup (master / worker): " ntype
+ntype="$(echo "$ntype" | awk '{print tolower($0)}')"
+if [[ "$ntype" == 'master' ]]; then 
 echo -e "\n-------------------------- K8S Master node setup --------------------------"
-elif [[ "$1" == 'worker' ]]; then 
+elif [[ "$ntype" == 'worker' ]]; then 
 echo -e "\n-------------------------- K8S Worker node setup --------------------------"
 else 
-unkown_option $0 $1
+unkown_option $ntype
 fi
 
 echo -e "\n-------------------------- Updating OS --------------------------\n"
@@ -59,7 +60,7 @@ sudo systemctl enable docker.service && echo "    docker.service enabled"
 echo -e "\n-------------------------- Install kubeadm, kubelet, kubectl and kubernetes-cni --------------------------\n"
 sudo apt-get install -y kubeadm kubelet=1.25.5-00 kubectl kubernetes-cni
 
-if [[ $1 == 'master' ]]; then 
+if [[ "$ntype" == 'master' ]]; then 
 echo -e "\n-------------------------- Initiating kubeadm (master node) --------------------------\n"
 sudo su - <<EOF
 kubeadm init
@@ -101,7 +102,7 @@ echo "          RUN: kubectl get nodes"
 echo -e "\n-----------------------------------------------------------------------------------"
 fi  
 
-if [[ $1 == 'worker' ]]; then 
+if [[ "$ntype" == 'worker' ]]; then 
 sudo su - <<EOF
 systemctl daemon-reload 
 systemctl restart docker 
