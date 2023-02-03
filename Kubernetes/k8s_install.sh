@@ -26,6 +26,7 @@ elif [[ "$ntype" == 'worker' ]]; then
 echo -e "\n-------------------------- K8S Worker node setup --------------------------"
 else 
 unkown_option $ntype
+exit 0
 fi
 
 echo -e "\n-------------------------- Updating OS --------------------------\n"
