@@ -63,16 +63,88 @@ kubernetes Architecture
 
 Assignment: What happens when a new pod request comes to (control plane / Master node) ? 
 
+YAML file 
+	- Filetype .yaml or .yml
+	- YAML file container key - value pairs 
+	- Key will be defined by the tools (k8s defined)
+	- Value will be defined by user.
+			Type of value we can is 
+				- Interger (Numeric)
+				- String (Alphanumeric)
+				- Array ( Group of similar)
+				- List  ( Group different types of elements)
+				- Boolean (True / False)
 
+ex: 	List 
+			1) name: Harsha
+			   hobbies: ["Driving", "coding", "Reading", "....."]
 
+			   			or
+			1) name: Harsha
+			   hobbies: 
+			   		- Driving
+					- coding
+					- Reading			
 
+	k8s synatx 
 
+		apiVersion: v1
+		kind: Pod
+		metadata:
+		    name: nginx
+			labels:
+               environment: production
+               app: nginx
+		spec:
+			containers:
+			- name: nginx
+				image: nginx:1.14.2
+				ports:
+				- containerPort: 80
 
+		apiVersion: 
+			- Type of api versions in k8s are alpha, beta and stable.
+			- vXalphaX, vXbetaX, and vX
+			- The is to specify the version of api used to create the kind of k8s object.
+		
+		kind: 
+			- used to specify which type of object we want to create.
+			- Always object name first letter is capital.
 
+		metadata: 
+			- To provide information on the object we are creating.
+			- name, labels, annotations.
 
+		spec: 
+			- complete configuration of the object is provided.
 
+pod 
+	- pods are the least/smallest deployable object in kubernetes.
+	- pod should contain at least one container and can have n number containers.
+    - All the containers in a pod will share the same resources.
 
+Deployment / Deployment controller 
+	- Deployment is used to create pod replicas (n number of similar kind of pods).
+	- At a given point of time Deployment ensures that the specified number of pods is always running.
+	- Deployment is a cluster level object.
+	- We can scale-up and scale-down the pods any time.
+			1. We can change the replicas in spec file.
+			2. kubectl scale deployment <deployment_name> --replicas=4 
+	- We can configure autoscale of pods using deployment and Deployment got its own autoscaller - HPA (Horizontal pod autoscaller) and VPA (Vertical pod autoscaller)	
+			kubectl autoscale deployment <deployment_name> --min=2 --max=10 --cpu-percent=50 --memory=200Mi 
+	- Deployment internally uses ReplicaSet controller to replicate the pods.
+	- Rollout and Rolldown of pod image updates.
 
+Labels, selector and annotations
+	Labels:
+		- K8S labels are provided as metadata key value to identify the object.
+		- We can provide labels to any object in K8S
+		- Labels are used to identify by selectors
+		- We can have same label on multiple objects and 	
 
+		To list labels of any object 
+			kubectl get <object_type> <object_name> --show-labels	
 
-
+	Selectors:
+		- Selectors are used to select, filter and identify the labeled objects.
+				
