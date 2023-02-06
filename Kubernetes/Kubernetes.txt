@@ -59,8 +59,6 @@ kubernetes Architecture
 			- pod should contain atleast one container and can have n number of containers.
 			- If pod contains more than one container all the container share the same memory assigned to that pod.
 
-
-
 Assignment: What happens when a new pod request comes to (control plane / Master node) ? 
 
 YAML file 
@@ -127,13 +125,20 @@ Deployment / Deployment controller
 	- Deployment is used to create pod replicas (n number of similar kind of pods).
 	- At a given point of time Deployment ensures that the specified number of pods is always running.
 	- Deployment is a cluster level object.
+
 	- We can scale-up and scale-down the pods any time.
 			1. We can change the replicas in spec file.
 			2. kubectl scale deployment <deployment_name> --replicas=4 
+
 	- We can configure autoscale of pods using deployment and Deployment got its own autoscaller - HPA (Horizontal pod autoscaller) and VPA (Vertical pod autoscaller)	
 			kubectl autoscale deployment <deployment_name> --min=2 --max=10 --cpu-percent=50 --memory=200Mi 
+	
 	- Deployment internally uses ReplicaSet controller to replicate the pods.
 	- Rollout and Rolldown of pod image updates.
+			Rollout - Update the app by updating the container image
+			Rolldown - Revert/Downgrade the app by downgrading the container image
+
+	Deployment = Pods + ReplicaSet + (Rollout, Rolldown) + (scale-up, scale-down) + autoscaller
 
 Labels, selector and annotations
 	Labels:
@@ -149,4 +154,38 @@ Labels, selector and annotations
 		- Selectors are used to select, filter and identify the labeled objects.
 
 		Types of selectors 
-						
+			equality-based 
+				- In this selector we can use only one operator which is equal_to (=, ==) or (!=) not_equal
+				- It looks for exact match for the label  
+
+				app = nginx  or app: nginx
+				app != nginx
+
+			set-based 
+				- This type of selector allows to filter objects based on multiple set of values to a key.
+				- operators that are supported are in , notin and exists
+
+				app in (nginx, nginx1)
+				app exists (nginx, nginx1)
+				app notin (nginx, nginx1)
+
+ReplicaSet vs Replication controller
+	- Both ensures that at a given point of time the specified number of replicas are always running.
+	- Replication controller is very old controller now it is replaced by ReplicaSet.
+	- The only difference between them is Replication controller supports only equality-based selector but 
+	  ReplicaSet support both set-based and equality based selector.
+
+DaemonSet 
+	- DaemonSet creates exactly one pod on each and every worker node in the cluster and ensures that all that are 
+	  always running.
+    - If a new worker node is added or deleted, DaemonSet will also add or delete the pod from the 
+	  respective worker node.
+
+Service (svc) 
+	- Service are cluster level object.
+	- By default, service are loadbalancers.
+	
+	 ClusterIP
+		- This is the default type of service in k8S.
+		- using ClusterIP we can expose the IPs of pods to another set of pods with in the cluster.
+
