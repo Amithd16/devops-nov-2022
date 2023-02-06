@@ -16,4 +16,6 @@ kubectl -n kubernetes-dashboard patch svc kubernetes-dashboard --patch "$(cat no
 
 rm nodeport_dashboard_patch.yaml
 
+echo -e "\n   DASHBOARD_ENDPOINT: Shttps://<any_worker_node_ip>:32000"
+echo -e "\n   USE BELLOW TOKEN TO LOGIN K8S_DASHBOARD\n"
 kubectl describe secret -n kubernetes-dashboard kubernetes-dashboard-token | grep -i 'token:      ' | awk -F 'token:      ' '{print $NF}'
