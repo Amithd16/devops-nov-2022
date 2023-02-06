@@ -147,4 +147,6 @@ Labels, selector and annotations
 
 	Selectors:
 		- Selectors are used to select, filter and identify the labeled objects.
-				
+
+		Types of selectors 
+						
