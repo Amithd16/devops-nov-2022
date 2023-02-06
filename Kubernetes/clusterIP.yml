@@ -32,5 +32,3 @@ spec:
        - name: http 
          port: 30002
          targetPort: 80
-
-         

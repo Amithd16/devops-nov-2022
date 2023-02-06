@@ -15,8 +15,8 @@ def print_check():
     return "Yes, application is running - CHECK complete"
 
 @app.route('/name')
-def print_check():
+def print_name():
     return "Harsha Jain"
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80)
+    app.run(host="0.0.0.0", port=8080)

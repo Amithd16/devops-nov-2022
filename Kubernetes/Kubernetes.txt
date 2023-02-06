@@ -184,8 +184,25 @@ DaemonSet
 Service (svc) 
 	- Service are cluster level object.
 	- By default, service are loadbalancers.
+	- K8S Preffered port range for services is between 30000 - 50000.  
 	
-	 ClusterIP
+	ClusterIP
 		- This is the default type of service in k8S.
 		- using ClusterIP we can expose the IPs of pods to another set of pods with in the cluster.
 
+		To check 
+			1. Create a custom images and push to your Docker registry
+				docker build -t <username>/<repo_name>:<tag> .
+				docker login
+				docker push 
+			2. kubectl apply -f clusterIP.yml
+
+			3. Login to any one pod
+					kubectl exec -it <pod_name> /bin/bash
+
+			4. Try to access the service - ClusterIP using <ClusterIP_ip_address>:<service_port>		 	
+				curl </ClusterIP_ip_address>:<service_port>
+				ex: (for i in {1..20}; do curl 10.101.209.36:30002; echo; done)
+
+	NodePort
+		
