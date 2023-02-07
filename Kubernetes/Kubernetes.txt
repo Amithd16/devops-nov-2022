@@ -84,7 +84,7 @@ ex: 	List
 					- coding
 					- Reading			
 
-	k8s synatx 
+	k8s syntax 
 
 		apiVersion: v1
 		kind: Pod
@@ -181,9 +181,10 @@ DaemonSet
     - If a new worker node is added or deleted, DaemonSet will also add or delete the pod from the 
 	  respective worker node.
 
-Service (svc) 
+Service (svc) (Basic network configurations in k8s)
+	- Service is an REST api objects with which we can define policies to access set of pods.
 	- Service are cluster level object.
-	- By default, service are loadbalancers.
+	- By default, services are loadbalancers.
 	- K8S Preffered port range for services is between 30000 - 50000.  
 	
 	ClusterIP
@@ -205,4 +206,49 @@ Service (svc)
 				ex: (for i in {1..20}; do curl 10.101.209.36:30002; echo; done)
 
 	NodePort
+		- This service is most primitive way to get the external traffic directed to our applications 
+		  running inside the cluster in pods.
+		- Automatically a ClusterIP will also be created internally.
+
+		NodePort = ClusterIP + a port mapping to the all the nodes ips. 		
+
+		- If we wont specify any port while creating nodeport, k8s will Automatically asigns a random port 
+		  between 30000 - 32767
+
+	Load Balancer 
+		- This service links to external cloud loadbalancers to the cluster.
+		- This type of services are used by cloud providers (EKS, AKS, GKS) and it is completely 
+		  depends on cloud provides.
+		- K8S is providing a better alternative for this service which is called Ingress.
+
+Statefull Applications 
+	- User session data is saved at the server side.
+	- if server goes down, it is difficult to transfer the session data to other server. 
+	- This type of application will not work, if we want to implement autoscaling.
+	
+Stateless Applications
+	- user session-data is never saved at the server side.
+	- using a common authentication gateway / client token method to validate the users 
+	  once for multiple microservices.	
 		
+https://medium.com/tech-tajawal/microservice-authentication-and-authorization-solutions-e0e5e74b248a		
+
+Monolothic and Microservice architecture 
+
+	Monolothic architecture
+		- A monolothic application has a single code base with multiple modules in it.
+		- It is a single build for entire application.
+		- To make minor changes to application, we need to re-build and re-deploy the 
+		  complete application.
+		- scaling is very challenging.
+			
+	Microservice architecture 
+		- A microservice application is composed of small (micro) services. 
+		- Each service will have a different code base.
+		- Application are divided into as small as possible sub applications called services
+		  which are independent to each other which are called loosely coupled.	
+		- Each service can be managed separately and it is deployable separately.
+		- Services need not to share same technology stack or frameworks.		 
+
+Headless service 
+
