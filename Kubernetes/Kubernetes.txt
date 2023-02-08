@@ -250,5 +250,18 @@ Monolothic and Microservice architecture
 		- Each service can be managed separately and it is deployable separately.
 		- Services need not to share same technology stack or frameworks.		 
 
-Headless service 
+StatefullSet 
+	- StatefullSet = Deployment + sticky identity for each and every pod 
+	- Unlike a deployemnt a StatefullSet maintains a sticky identity for each and every pod.
 
+
+Headless service 
+	- If we don't need the default loadbalancing capability of services nor the single IP to service we use StatefullSet 
+	- using Headless service we can get all the target pod ips, if we do nslookup.
+	- It is created by sepcifying 'none' for ClusterIP
+	- Headless service is usually used with StatefullSet controller.    
+
+To check app is running 
+	telnet 10.102.174.193 30002
+
+namespace 	
