@@ -9,7 +9,7 @@ kubernetes Architecture
 			  communicate through API server only and no other component will 
 			  communicate directly with each other.
 			- This is the only component which connects and got access to etcd.
-			- All the cluster requests are authenticated and authorised by API server.
+			- All the cluster requests are authenticated and authorized by API server.
 			- API server has a watch mechanism for watching the changes in cluster.
 			
 		2. etcd 
@@ -264,4 +264,155 @@ Headless service
 To check app is running 
 	telnet 10.102.174.193 30002
 
-namespace 	
+namespaces (ns)
+	- k8s namespaces is a way of applying abstraction / isolation to support multiple 
+	  virtual clusters of k8s objects with in the same physical cluster.
+	- Each and every object in k8s must be in a namespace.
+	- If we wont specify namespace, objects will be created in default namespace of k8s.
+    - namespaces are cluster level.
+	- Namespace are only hidden from each other but not fully isolated because one 
+	  service in a namespace can talk to another service in another namespace using 
+	  fullname (service/<service_name>) followed by namespace name
+	
+	usage: we can apply environment based logical separation on cluster. 
+		
+	Type of deafault NS
+	1. default
+	   - This NS is used for all the objects which are not belongs to any other namespace.
+	   - If we wont specify any namespace while creating an object in k8s then 
+         that object will be created in deafult namespace.
+			
+	2. kube-system 
+	   - This namespace is always used for objects created by the k8s system.
+	   
+	3. kube-public 
+	   - The objects in this namespace are available or accessable to all.
+       - All the objects in this namespace are made public.
+
+	4. kube-node-lease 
+	   - This namespace holds lease objects assosiated with each node.
+	   - Node lease allows the kubelet to send heartbeats so that the control palne can 
+		 detect node failure.
+
+	To list namespaces 
+		kubectl get namespaces 
+		kubectl get ns	
+
+	To list object in a namespace 
+		kubectl get -n <namespace_name> <object_type>
+	
+	To list objects in all namespaces
+		kubectl get --all-namespaces <object_type>
+		kubectl get -A <object_type>
+
+	To create a namespace 
+		kubectl create ns <namespace_name>
+		
+	To create a object in a namespace 
+		1. In metadata:
+			namespace: <namespace_name>
+
+		2. While apply 	
+			kubectl apply -f <spec_file>.yml -n <namespace_name> 
+
+		Note: If we provide namespace in both spec file and while apply, 
+		      apply command check and compares the namespace in spec file if they are not same k8s won't 
+		      allow us to create the object.			
+	
+Service Discovery (microservice access)
+	Questions 
+		- How a microservice will communicate with other microservice
+		- pod to pod communicate 
+
+	kubectl cluster-info
+		to get ip address of our k8s cluster and also CoreDNS address 
+
+	1. Services 
+		- we can use the fullname of service to Discovery a microservice (pod)		
+			fullname - (service/<service_name>)
+
+	2. DNS 
+		- DNS server is added to the cluster by k8s in order to map the service request.
+		- When ever we create a service k8s will Automatically create a DNS record for it.
+					A - (target always ip address )  CNAME (another DNS) 	
+		- Record type A is used in k8s service Discovery and this is created on objects with IP 
+			(pods, services) 			
+
+		syntax: 
+				mail.google.com 
+					.com (top level domain type)
+					google (name of the main domain)
+					mail (name of the subdomain)	
+
+				K8S DNS 
+					<object_name>.<namespace_name>.<object_type>.cluster.local
+
+					ex: my-clusterip-ip-app.default.svc.cluster.local	
+
+	3. K8S ENV 	
+		- These are environment variables which k8s auto creates in each and every pod 
+		  which is connected to a service 
+		- KUBERNETES_SERVICE_PORT_HTTPS=443
+		- KUBERNETES_SERVICE_PORT=443
+		- KUBERNETES_PORT_443_TCP=tcp://10.96.0.1:443
+		- KUBERNETES_PORT_443_TCP_PROTO=tcp
+		- KUBERNETES_PORT_443_TCP_ADDR=10.96.0.1
+		- KUBERNETES_SERVICE_HOST=10.96.0.1
+		- KUBERNETES_PORT=tcp://10.96.0.1:443
+		- KUBERNETES_PORT_443_TCP_PORT=443   		 		
+
+kubernetes Volumes 
+
+ConfigMaps and Secrets 
+	- ConfigMaps are k8s object that allows us ti separate the configuration data from the 
+	  pod configuration. 
+	- Using this we can easily inject the environment variables to the pods.
+	- ConfigMaps data is not secure and it is readable so better to use for 
+	  non-confidential data.
+
+	- Secrets by default data will be encrypted in BASE64 format.
+
+
+probes
+   -  when probe fails it will mark the container to be restarted. To continue running probe checks should end in success.
+	  
+	  Common fields in probes 
+		initialDelaySeconds: After the container has started the number of seconds to wait 
+							 before executing the probe.
+		periodSeconds: The number of seconds the probe should be executing. (Default 10 secs and min 1 second)
+		timeoutSeconds: NUmber of seconds after which probe check timeouts.  (default 1)
+		failureThreshold: This is the number of subsequent failures probe should get to mark container to stop. (default 3) 
+		successThreshold: This is the number of subsequent success probe should get to mark container to stop. (default 1)
+
+	  EndPoints 
+	  	 http probes (httpGet)
+			host - hostname to connect (dns / ip) (default is the ip od the pod) (ex: www.google.com)
+			path - exact path of the application on the http sever (ex: /mail)
+					ex: www.google.com/mail
+			port - Name or number of the port to check		
+			httpHeaders - can send data in request headers 		
+		 TCP probes
+			port - Name or number of the port to check.
+		 exec 
+		 	command - command to execute and check the status.
+
+	Types of probes 
+		1) Liveness-probe
+			- It will check application endpoint is healthy or not.
+			- If Liveness probe fails it will mark the container to be restarted by kubelet.
+
+		Liveness - http
+		apiVersion: v1
+		kind: pod 
+		metadata: 
+		     name: liveness-http
+
+
+		2) Readiness-probe
+			- Readiness probe check application running or not and also it checks 
+			  application is in a state to accept the traffic or not.	
+
+		3) startupProbe
+				- This probe will the one one to run first on container startup.
+				- We can use this is give more time to startup an application.
+			
