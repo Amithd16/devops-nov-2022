@@ -370,12 +370,111 @@ ConfigMaps and Secrets
 	- ConfigMaps data is not secure and it is readable so better to use for 
 	  non-confidential data.
 
-	- Secrets by default data will be encrypted in BASE64 format.
+	Create a configmap
+		1. Create a file by name "app.properties"
+			environment=test
+			database_url="192.168.1.1"
+			database_password="adjhfgjladhgalhg"
+			
+		2. Load the single config file 
+			kubectl create configmap <configmap_name> --from-file configs/app.properties
+
+		   Load the multiple config files 	
+			kubectl create configmap <configmap_name> --from-file configs/
+			
+		   Create configmap spec file 
+				apiVersion: v1
+				kind: ConfigMap
+				metadata:
+				   name: test-configmap
+				data:
+				   environment: test
+				   app: frontend
+			
+		3. To use configmaps to inject env varible in a pod
+			
+				apiVersion: v1
+				kind: Pod
+				metadata:
+				  name: nginx-deployment-new
+				spec:
+				    containers:
+					  - name: nginx
+						image: nginx:1.14.2
+						ports:
+						- containerPort: 80
+						env:
+						  - name: CURRENT_ENV
+						    valueFrom: 
+                                configMapKeyRef: 							
+									name: test-configmap
+									key: environment
+						  - name: DB_URL
+						    valueFrom: 
+                                configMapKeyRef: 							
+									name: test-configmap
+									key: database_url			
+		
+	SECRETS	
+	
+	- using secrets we can inject the environment variables to the pod containers in encrypted.
+    - By deafault secrets data will be in base64 format and we use secrets for confidential data.
+		
+
+	Create a configmap
+		1. Create values in base64 format 
+			echo "<value>" | base64 
+				output: <base64_value>
+			echo "<value1>" | base64 
+				output: <base64_value1>
+		
+		2. Load the single config file 
+			kubectl create secret <configmap_name> --from-file configs/app.properties
+
+		   Load the multiple config files 	
+			kubectl create secret <configmap_name> --from-file configs/
+			
+		   Create configmap spec file 
+				apiVersion: v1
+				kind: Secret
+				metadata:
+				   name: test-secret
+				data:
+				   dburl: <base64_value>
+				   dbpassword: <base64_value1>
+			
+		3. To use secrets to inject env varible in a pod
+				apiVersion: v1
+				kind: Pod
+				metadata:
+				  name: nginx-deployment-new
+				spec:
+				    containers:
+					  - name: nginx
+						image: nginx:1.14.2
+						ports:
+						- containerPort: 80
+						env:
+						  - name: DB_URL
+						    valueFrom: 
+                                secretKeyRef: 							
+									name: test-secret
+									key: dburl
+						  - name: DB_PASSWORD
+						    valueFrom: 
+                                secretKeyRef: 							
+									name: test-secret
+									key: dbpassword		
 
 
 probes
    -  when probe fails it will mark the container to be restarted. To continue running probe checks should end in success.
-	  
+   - probe is a periodic call to some applciation endpoints within a container.
+	- probes can track success or failure of the other applications.
+	- When there is a subsequent failure occures we can defie probe to get triggered.
+	- when subsequent success after a failure we can define probe to get triggered.
+	- probes works at container level.
+
 	  Common fields in probes 
 		initialDelaySeconds: After the container has started the number of seconds to wait 
 							 before executing the probe.
@@ -415,4 +514,4 @@ probes
 		3) startupProbe
 				- This probe will the one one to run first on container startup.
 				- We can use this is give more time to startup an application.
-			
+
