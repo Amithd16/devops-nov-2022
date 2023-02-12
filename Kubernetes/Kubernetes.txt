@@ -510,8 +510,63 @@ probes
 		2) Readiness-probe
 			- Readiness probe check application running or not and also it checks 
 			  application is in a state to accept the traffic or not.	
+			- When this probe is fails, the traffic from the load-balancer is halted
+	  		  to the application inside the container.
 
 		3) startupProbe
 				- This probe will the one one to run first on container startup.
 				- We can use this is give more time to startup an application.
 
+kubernetes container types (multi container pod patterns)
+	In a pod we will always have only one main application container and all the other containers are to support and 
+	extend the functionality of the application container.	
+
+	init container 
+		- init containers are the containers that will run completely before starting 
+		  the main app container.
+		- This provides a lifecycle at the startup and we can define things for 
+		initialization purpose.
+		- kubernetes has stopped support of probes in init containers.
+		- These are pod level objects.
+		- we can use this container to have some deply on the startup of the main container.
+	
+		These are some of the scenarios where you can use this pattern
+		- You can use this pattern where your application or main containers need some
+		  prerequisites such as installing some software, database setup, permissions on the file
+		  system before starting.
+		- You can use this pattern where you want to delay the start of the main containers.
+
+	Demo steps (kubectl apply -f init_container.yml)
+		1. login to pod 
+				kubectl exec -it <pod_name> -- /bin/sh 
+		2. apt update && apt install -y curl 
+		3. curl localhost
+			
+		To check the log of particular container out of multiple in a pod 
+			kubectl logs <pod_name> -c <container_name>
+
+
+	Sidecar container 
+	- These are the containers that will run along with the main app container.
+	- we have a app container which is working fine but we want to extend the 
+	  functionality without changing the existing code in main container for this 
+      purpose we can use sidecar container.
+    - we use this container to feed the log data to monitoring tools.	
+	
+	These are some of the scenarios where you can use this pattern
+		- Whenever you want to extend the functionality of the existing single container pod without
+		  touching the existing one.
+		- Whenever you want to enhance the functionality of the existing single container pod
+		  without touching the existing one.
+		- You can use this pattern to synchronize the main container code with the git server pull.
+		- You can use this pattern for sending log events to the external server.
+		- You can use this pattern for network-related tasks.
+	
+Adaptor container 
+	- In this patter we use a sidecar container to feed the log data to a monitoring tool.
+	
+	https://www.magalix.com/blog/kubernetes-patterns-the-ambassador-pattern
+
+	Note: In linux, If we want to print a file which getting updated live - tail -f <file_name>
+
+RBAC  (Role Based Access Control)
