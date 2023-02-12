@@ -10,7 +10,7 @@ def print_the_ip():
     get_local_ip = socket.gethostbyname(hostname)
     return get_local_ip
 
-@app.route('/check')
+@app.route('/healthz')
 def print_check():
     return "Yes, application is running - CHECK complete"
 
