@@ -570,3 +570,101 @@ Adaptor container
 	Note: In linux, If we want to print a file which getting updated live - tail -f <file_name>
 
 RBAC  (Role Based Access Control)
+	- Account 
+	- Roles 
+	- Bind/Attach the role to account 
+
+	Accounts 
+		- USER ACCOUNT: it is used for a human users to control the access to k8s.
+		- SERVICE ACCOUNT: It will be used by an application which need the access to the cluster.
+						   Instead of password we used tokens for SA	
+			STEP 1: To create a service account 
+					1. kubectl create sa <service_account_name>
+					
+					2.  spec file.
+						apiVersion: v1
+						kind: ServiceAccount 
+						metadata: 
+							name: <service_account_name>
+
+			STEP 2: Create a token for above service account 
+					apiVersion: v1
+					kind: Secret 
+					metadata: 
+						name: <secret_name>
+					annotations: 
+						kubernetes.io/service-account.name: <service_account_name>
+					type: 
+						kubernetes.io/service-account-token
+
+	Roles
+	1. Role
+		- Roles are set of rules to control the access to k8s on a account.
+		- Role are always user define and we need to attach it to a account.
+		- Roles are bound to namespace and it work only for a namespace which is defined in it.
+		- rbac.authorization.k8s.io/v1 is the api version.
+		common fields in role 
+			apiGroups: List of apis to control the accept  (any [], [""], ["*"])
+			Resources: k8s objects on which we want to define this roles for a account 
+			resourceNames: control the access on sub resources groups
+			Verbs: The operation / actions that we can perform 
+					ex: ["get","list","create","apply","delete","watch","update","watch","patch","proxy","post"]
+
+	Role Binding 
+		- Role Binding is used to attach a role to a account 
+		- Role Binding is also a namespace level object.
+
+		- We can also use  RoleBinding to attach ClusterRole to Role within a namespace. 
+		
+		subjects: Account or Groups 
+		roleRef: the role that we need to attach the account 	
+
+	To check the access of another account 
+		kubectl auth can-i <verb> <object> --as=system:<account_type>:<account_namespace>:<account_name>
+		ex: kubectl auth can-i list pods --as=system:serviceaccount:default:k8s-sa
+
+	2. ClusterRole 
+		 - This is cluster wide role.
+	     - We should not specify any namespace.	
+
+		Cluster Role Binding  
+			- To bind a cluster role to any account.
+
+How to configure kubectl from outside or from any other machine using service account 
+
+1. Install kubectl on Linux
+
+	STEP1: curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl STEP2: chmod +x ./kubectl
+	STEP3: sudo mv ./kubectl /usr/local/bin/kubectl
+
+	To verify installation: kubectl version --client
+
+2. Setting Kubernetes Cluster parameters
+	kubectl config set-cluster <cluster_name> --server=https://<IPorDNS>:<Port> --insecure-skip-tls-verify=true
+	
+	Note: The above command will create the basic config file $HOME/.kube/config
+	      <cluster_name> any name can be given for your reference 
+ 	      <IPorDNS> should be public one
+	      <Port> - 6443 (To get port number - kubectl cluster-info)
+	
+3. Adding the token of the user to the context
+
+	STEP 1: Copy the secret token of service account from the cluster to connect
+		   Kubectl describe secret <secter_name>
+
+	STEP 2: kubectl config set-credentials <user_name> --token=<copied token>
+			Note: <user-name> any name can be given for your reference
+
+4. Creating the Serviceaccount as User
+	kubectl config set-context <context_name> --cluster=<cluster_name> --user=<user_name>
+
+		Note: <context_name> any name can be given for your reference
+		      <cluster_name> same name as from 2.
+		      <user_name>    same name as from 3.
+
+5. Switch the Context to your newly created user-context
+	kubectl config use-context <context-name>
+		Note: <context_name> same name as from 4.
+	
+	We can have multiple contexts with different cluster service accounts. 
+		To list contexts: kubectl config get-contexts
