@@ -615,7 +615,7 @@ RBAC  (Role Based Access Control)
 		- Role Binding is also a namespace level object.
 
 		- We can also use  RoleBinding to attach ClusterRole to Role within a namespace. 
-		
+
 		subjects: Account or Groups 
 		roleRef: the role that we need to attach the account 	
 
@@ -668,3 +668,185 @@ How to configure kubectl from outside or from any other machine using service ac
 	
 	We can have multiple contexts with different cluster service accounts. 
 		To list contexts: kubectl config get-contexts
+
+USER ACCOUNT
+1.	Create a useraccount 
+	sudo useradd -s /bin/bash -d /home/<username>/ -m -G sudo <username>
+
+2.	Create a private key for the above user created:
+	sudo openssl genrsa -out <username>.key 2048
+
+3.	Create a certificate signing request (CSR). CN is the username and O the group.
+	sudo openssl req -new -key <username>.key -out <username>.csr -subj "/CN=<username>/O=sudo"
+
+4.	Sign the CSR with the Kubernetes
+	Note: We have to use the CA cert and key which are normally in /etc/kubernetes/pki/
+	
+	sudo openssl x509 -req -in <username>.csr \
+  	-CA /etc/kubernetes/pki/ca.crt \
+  	-CAkey /etc/kubernetes/pki/ca.key \
+  	-CAcreateserial \
+  	-out <username>.crt -days 500
+
+5.	Create a “.certs” directory where we are going to store the user public and private key.
+	sudo mkdir .certs && sudo mv jean.crt jean.key .certs
+
+6.	Now we need to grant all the created files and directories to the user:
+	sudo chown -R <username>: /home/<username>/
+	sudo vi /etc/sudoers and add <username>   ALL=(ALL:ALL)  ALL	
+
+7.	Change user to <username>
+	sudo -u <username> bash
+
+8.	Create kubeconfig for <username>
+	kubectl config set-credentials <username> \
+ 	 --client-certificate=/home/<username>/.certs/<username>.crt \
+ 	 --client-key=/home/<username>/.certs/<username>.key
+
+9.	Create context for <username> and cluster
+	kubectl config set-context <context-name> \
+	--cluster=<cluster-name> \
+	--user=<username>
+
+10.	Switch the above created context 
+	kubectl config use-context <context-name>	
+
+11.	Edit the file $HOME/.kube/config  to Add certificate-authority-data: and server: keys under cluster. 
+	apiVersion: v1
+	clusters:
+	- cluster:
+	   certificate-authority-data: {get from /etc/kubernetes/admin.conf}
+	   server: {get from /etc/kubernetes/admin.conf}
+	  name: kubernetes
+	. . . . 
+	
+12.	Check the setup by running the command 
+ 	Kubectl get nodes/pods
+	Note: If “Error from server (Forbidden):” then create the required 
+ 	roles/clusterRoles for the user <username>		
+
+
+How to schedule a pod to a designated worker node 
+	1. Node selector 
+		- Node selector is a way of binding pod to a worker node or nodes based on the 
+		  node labels.
+		- We cannot use any logical expresions type of selection.  
+	
+		create a label to worker node 
+			kubectl label node <node_name> <key>=<value>
+			
+		Use nodeSelector with the same label created to create pods in the same worker node
+			apiVersion: apps/v1
+			kind: Deployment
+			metadata:
+			  name: nginx-deployment
+			spec:
+			  replicas: 6
+			  selector:
+				matchLabels:
+				  app: ipapp
+			  template:
+				metadata:
+				  labels:
+					app: ipapp
+				spec:
+				  nodeSelector:
+					<key>: <value>
+				  containers:
+				  - name: nginx
+					image: nginx:latest
+					ports:
+					- containerPort: 80
+
+	2. Node affinity and anti-affinity 
+		Node affinity 
+			- nodeSelector with logical expressions is affinity 
+			- using node affinity we can spread the pod schedule on worker nodes based on 
+					- cpacity (memory-intense mode)
+					- Availability zone (HA mode)
+
+			prefferedDuringSchedullingIgnoreDuringExecution - The scheduler tries to find a node matching the rules, if 
+			a matching node is not 	available then scheduler still schedules the pods in normal way.
+
+			requiredDuringSchedullingIgnoreDuringExecution - THe scheduler will not schedule the pod until 
+			the rules are matching.
+
+			IgnoreDuringExecution - If the node labels are changes after the scheduling of pods still the pods continues to run.
+			
+			spec:
+				affinity:
+					nodeAffinity:
+					requiredDuringSchedulingIgnoredDuringExecution:
+						nodeSelectorTerms:
+						- matchExpressions:
+						- key: topology.kubernetes.io/zone
+							operator: In
+							values:
+							- antarctica-east1
+							- antarctica-west1
+		
+		node Anti-affinity (Inter-pod Affinity)
+			- This is used to define whether a given pod should or should not be 
+			  scheduled on a particular node based on conditional labels.	
+			
+			spec: 
+				containers: 
+						........
+						
+				affinity: 
+					nodeAntiAffinity:
+					  requiredDuringSchedulingIgnoredDuringExecution:
+						IfNotPresent:
+						- matchExpressions:
+						  - key: <label_key>
+							operator: In
+							values:
+							- <label_value>
+
+	3. 	Taints and Tolerations	
+			- Taints are used to mark worker nodes so that the marked worker node 
+			  repels all the pods without having Tolerations for that taint.
+
+			taints Effects 
+				1) NoSchedule 
+						- This taint means unless a pod with the Tolerations matching the scheduler 
+						  will never schedule the pod.
+
+				2) NoExecute
+						- This taint means if pod should be running means tolerations should be there.
+						- We can use this to delete some sets pods based on conditions.
+
+			To taint a worker 
+				kubectl taint node <node_name> <taint_key>=<taint_value>:<taint_effect>
+
+			To untaint a worker  (use - at the end of taint command)
+				kubectl taint node <node_name> <taint_key>=<taint_value>:<taint_effect>-
+
+			tolerations in pod 
+				spec: 
+				   tolerations:	
+				    - key: <taint_key>
+					  operator: "Equal"
+					  value: <taint_value>
+					  effect: <taint_effect>
+						
+			Note: if the operator used is "Equal then we need to provide value and if use Exists then no value is required.		  
+
+
+Network policy 
+Pod eviction 
+
+ 
+Jobs 
+Quotas and limits 
+
+
+Ingress
+multimaster cluster 
+Deployment stratergies 
+
+
+helm 
+terraform 
+
+Ansible 
