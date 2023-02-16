@@ -834,19 +834,152 @@ How to schedule a pod to a designated worker node
 
 
 Network policy 
-Pod eviction 
+
+	- By default, In k8s any pod can communicate with each other within the cluster across 
+	  the different namespaces and worker node.
+	- The deafault netwrok of k8s is of open stack model this opens a huge risk for potential 
+	  security issues.
+    - We can use network polices to delete Deny all for the cluster and we can write polices 
+	  to allow only required requests to cluster.
+	- Network polices is defined for ingress and egress.
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+spec: 
+    podSelector: {}
+    policyTypes:
+	    - Ingress 
+
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: nginx-pod
+spec: 
+    podSelector: 
+		matchLabels:
+		    app: ip-app	
+    policyTypes:
+	    - Ingress
+	ingress:
+	    - from: 
+		  - podSelector: 
+		        matchLabels:
+				   app: backed	
+		  ports:
+          - protocol: TCP
+            port: 6379		   
+
+
+pod eviction 
+
+	- Kubernetes evict pods if the node resources are running out such as cpu, RAM and storage.
+	- Pod with failed state will be evicted first because they may not running but could still 
+	  be using cluster resources and then k8s runs decision making based.
+	  
+	  Kubernetes looks at two different reasons to make eviction decision: 
+			1. QoS (Quality of Service) class. 
+				For every container in the pod:
+				  - There must be a memory limit and a memory request.
+				  - The memory limit must equal the memory request.
+				  - There must be a CPU limit and a CPU request.
+				  - The CPU limit must equal the CPU request.
+			2. Priority class.
+				- A pod"s priority class defines the importance of the pod compared to other 
+				  pods running in the cluster.
+				- based on the priority low to high pods will be evicted.  
+
+
+		  - Cluster autoscaler tools are mostly provided by public cloud providers.	
 
  
+Resource quotas and limits 
+	How to limit the number of pods to a namepsace ?
+	how to limit the memory to a pod ?
+	
+	Count quota 
+		- This quota is used to limit the max number of obejcts that we can have 
+		  in a namepsace.
+		syntax: 
+			count/<resource>.<group> for resources from non-core groups
+			count/<resource> for resources from the core group
+			
+		Below are the list of resources we can have count quota 
+			count/pods
+			count/persistentvolumeclaims
+			count/services
+			count/secrets
+			count/configmaps
+			count/replicationcontrollers
+			count/deployments.apps
+			count/replicasets.apps
+			count/statefulsets.apps
+			count/jobs.batch
+			count/cronjobs.batch
+			
+		ex: 
+			apiVersion: v1
+			kind: ResourceQuota
+			metadata:
+			   name: pod-count-quota
+			spec:
+			  hard:
+				 scount/pods: "2"
+				 
+	Quota on CPU/RAM/Disk
+		apiVersion: v1
+		kind: ResourceQuota
+		metadata:
+		   name: resource-quota
+		spec:
+		  hard:
+			 request.cpu: "0.2"
+			 limits.cpu: "0.8"
+			 
+					0r 
+					
+			 request.memory: "512Mi"
+			 limits.memory: "800Mi"	
+		
+		CPU 
+		  - 1 cpu, in k8s 1 is equal to 100% to 1 cpu/core and 1 hyperthread.
+		  - if not specified by deafult k8s allocates 0.5 cpu to a pod.
+	
+				we can have 0.1, 0.2, ..... 0.9, 1  
+				
+				0.1 cpu = 100m = 1 hundred milli cpu
+		
+		Memory 
+			- In k8s resources are measured in bytes. 
+			- The memory should in simple integer value (Fixed point number).
+			- Representation Ki,Mi,Gi,Ti,Pi,Ei
+					
+			apiVersion: v1
+			kind: Pod
+			metadata:
+			  name: nginx-deployment-new
+			spec:
+			    containers:
+				  - name: nginx
+					image: nginx:1.14.2
+					ports:
+					- containerPort: 80	
+				resources:
+					requests: 
+						memory: "100Mi"
+						cpu: 0.5
+					limits:
+						memory: "250Mi"
+						cpu: 1
+
+						
 Jobs 
-Quotas and limits 
+ 
 
 
 Ingress
 multimaster cluster 
 Deployment stratergies 
 
-
-helm 
-terraform 
-
-Ansible 
