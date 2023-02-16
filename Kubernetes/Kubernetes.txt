@@ -974,12 +974,35 @@ Resource quotas and limits
 						memory: "250Mi"
 						cpu: 1
 
-						
+Ingress
+	1. ingress controller (one time setup)
+		1. install helm 
+			https://helm.sh/docs/intro/install/
+		
+		2. Install ingress controller with helm
+			helm repo add nginx-stable https://helm.nginx.com/stable 
+			helm repo update
+			helm install my-release nginx-stable/nginx-ingress --set rbac.create=true
+		
+		3. Create a mapping of some hostname to ingress controller LB - IP
+			sudo vi /etc/hosts
+			add <lb-ip> app.example.com
+
+		4. create ruouting rule using ingress resource also know as Ingress 
+			use ingress.yml
+
+		5. curl app.example.com/<path>
+
+
+	2. ingress resource (ingress)		
+
+	install 	
+
 Jobs 
  
 
 
-Ingress
+
 multimaster cluster 
 Deployment stratergies 
 

@@ -23,7 +23,7 @@ spec:
 apiVersion: v1 
 kind: Service 
 metadata:
-    name: my-clusterip-ip-app
+    name: my-clusterip
 spec: 
     type: ClusterIP
     selector: 
