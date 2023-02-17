@@ -975,6 +975,27 @@ Resource quotas and limits
 						cpu: 1
 
 Ingress
+	Cloud loadbalancer are costly as most of the times billing will be per requests so 
+	to avoid this the kubernetes solution is Ingress, we can run an external software based 
+	load balancer in our cluster.
+		
+	1. Ingress controller 
+		- This controller is used to execute the ingress resources which contains 
+		  routing rules and brings the external traffic based on routing rules to the 
+		  internal service.	
+	    - This controller will automatically monitors the exiting resources and also 
+		  identifies new ingress resources.
+		- This will be a third party controllers (tools) which we need to install it 
+          for one time in our cluster as controller.
+		- We are using nginx as ingress controller.
+
+	2. Ingress resources 
+		- In k8s Ingress resource is type of object which is used to define routing rules 
+		  based on path of incoming traffic to internal cluster service.
+		- api for ingress resource networking.k8s.io/v1 	
+		- Ingress can be used for revers proxy means to expose multiple services under same IP.
+		- Ingress can be used to delete ssl/tls certificates.
+
 	1. ingress controller (one time setup)
 		1. install helm 
 			https://helm.sh/docs/intro/install/
@@ -998,11 +1019,100 @@ Ingress
 
 	install 	
 
-Jobs 
- 
-
-
-
-multimaster cluster 
 Deployment stratergies 
+	(Zero downtime / High Availability)
+	1. Rolling Update
+		- A percent of pod will be updated. 	
+		- By defualt max unavailable will be 25%.
+		- By default deployment in k8s uses rolling update stratergy which means if I want use 
+		  this stratergy I don'nt need to specify any parameters in spec file. 
+		- Example: By default k8s automatically decides the percentage of keeping available pods.
+		  usually one out 4 it updates (25%). 
+		
+		- To overrride the default behaviour 
+			spec: 
+				strategy: 
+					type: RollingUpdate 
+					rollingUpdate: 
+						maxSurge: 1
+						maxUnavailable: 25%
+
+	2. Recreate 
+		- The Recreate stratergy will bring all the old pods down immediately and the creates 
+		  new updated pods to match the replica count.			
+			spec: 
+				strategy: 
+					type: Recreate 
+
+	3. Blue-Green Deployment 
+		- We keep 2 sets of similar environment in which one will be live called blue  
+		  environment and the one which is not live is called as green. 
+		- we update the new changes to green environment first which is not live and we 
+		  swap/ redirect the traffic from blue to green environment.
+		- Finally current green environment with new updates we rename it as blue and  
+		  the current blue environment is renamed as green we use this for next release deployment.
+
+	4. Canary Deployment 
+		- A canary release is a software testing technique used to reduce the risk of 
+		  introducing a new software version into production by gradually rolling out 
+		  the change to a small subgroup of users, before rolling it out to the entire 
+		  platform/infrastructure.	  
+
+Pod lifecycle 
+	1. pending 
+		- This is the state of pod when pod will be waiting for k8s cluster to accept it.
+		- pod will be downloading the image form registry.
+		- pod will be in pending state if scheduler still trying to assign to a node.
+
+	2. Running 
+		- The pod got a node assigned and all the containers inside the pod is running.
+		- At least one container is running and other in starting state (no container should be in exited)
+		
+	3. Failed 
+		- All the container in pod should not be running and at least one container should be in terminated state 
+		  in failure.
+	
+	4. Succeeded 
+		- All the containers in pod have been terminated successfully / gracefully 
+	
+	5. Unknown 
+		- For some other reason the API server can not get the pod state the it will put pod in Unknown state 
+		- When k8s can't communicate with the worker node the it will put all the pods of that worker node to unknown.
+
+	6. Terminating
+		- when pod is being deleted 
+	
+	
+	Container status 
+		Running 
+			- When container is running the process without error 
+		
+		Terminated 
+			- Process inside the container has completed the execution successfully or it may be failed 
+			  due to error.
+		
+		Waiting
+			- If a container is not running or neither in terminated state.
+
+
+	Common errors 
+		ImagePullBackOff 
+			- Docker image registry is not accessible 
+			- Image name is incorrect.
+		
+		CrashLoopBackOff 
+			- This error comes when probe check fails.
+			- Error in docker image
+
+		RunContainerError 
+			- Configmap / secrets are missing 
+			- volumes are not available 
+
+	https://kukulinski.com/10-most-common-reasons-kubernetes-deployments-fail-part-1/
+
+Jobs 
+	
+	
+multimaster cluster 
+
 
