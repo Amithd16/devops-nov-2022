@@ -453,33 +453,30 @@ Benefits of Docker
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Docker multistage build	
+
+	How to optimise docker build process ?
+	How to reduce the size of the docker image or container ? 
+
+	After docker 1.6 version docker released this option.
+	1. There are 2 problems with the normal build process 
+			1. Size: challenge is to keep the image and its containers size as minimal as  		
+			   possible.
+			2. larger the surface area more the application is vulnerable to attacks. 
 	
+		- Multistage build allows us to define multiple FROM in same Dockerfile.
+		- Dependency between multiple FROM is maintained by naming FROM using 
+		  AS keyword and we can refer this name in another FROM.
+
+				FROM <base_image> AS <STAGE_NAME>
+				
+		- Only the final FROM image is created leaving back all the other FROM.
+		- Copy only the required files from the named FROM stage like below.
+				FROM final_build
+				COPY --from <STAGE_NAME> <src_named_stage> <dest>
+	
+	2. Always try to use the slim / alpine / stretch version of base image instead 
+	   of using the fully loaded base image.
 
 
 	
