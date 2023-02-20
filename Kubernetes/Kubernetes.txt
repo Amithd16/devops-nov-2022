@@ -1111,8 +1111,120 @@ Pod lifecycle
 	https://kukulinski.com/10-most-common-reasons-kubernetes-deployments-fail-part-1/
 
 Jobs 
-	
-	
+	- Job will create pods and tracks the status of the pod 
+	- Job stauts always depends on the pod status that it creates
+	- By default job will run pods in sequential pattern.
+
+	restartPolicy
+		There are restart policies we can use 
+		1. Always: This is the default policy. 
+				   If container stop always it will restarted even if they successfully executed.	
+		2. OnFailure: Container will be restarted on if the container fails.
+		3. Never: No matter what ever the result is container never restarted.
+
+	completions 
+		- This is number of times the job will be executed.
+		- Default job will execute 1 time 
+
+	Parallelism
+		- By default jobs will run serialy so to run jobs parrallely we need to use this field.
+		- Parallelism is used to set number of job needs to be exected parallely.
+
+	backoffLimit 
+		- For some reason pods are failling but jobs will not stop untill it executes the pods 
+		  to get success as completions.
+		- To limit the job execution after the pod failure we use this field.
+		-   backoffLimit: 2, after pods fails for 2 times job will not conutinue its execution 
+
+	activeDeadlineSecond: 
+		- We use this field to set the execution time for Job and if job takes more time (seconds) that this 
+		  deadline time then job will be terminated automatically.
+	 
+	schedule (CronJob)
+		- To run a job at a given time 
+		- It takes default linux cron tab parametes (5 star)
+
 multimaster cluster 
+
+What is the size of the k8s cluster ?
+		- we are manitaining different cluster for different environment
+		 					(OR)
+		  we have one big cluster and environments are maintained through namepsaces
+		- always the count of master nodes should always odd number.
+		- we are using loadbalancer / multiple people are working they may add the worker nodes 
+		  so I never kept exact count of nodes but on average we have 20 to 25 worker nodes.
+	
+	Why always the number of master nodes is odd number ?
+		- Based on Quorum calculation ((n/2)+1) we get same quorum failure rate for odd number 
+		  and its next even number of nodes, so it is better to use odd number nodes instead 
+		  of even number and we start with minimum 3 master nodes.
+		- Always tell odd number of nodes (any odd number starting with 3, 5, 7, 9)
+		- Based on the quorum value we choose only odd number of nodes starting with 3 to 
+		  achive better fault tollerance cluster.
+
+Running multimaster with kops (self managed multimaster cluster)
+STEP 1: Create IAM user in AWS account in which the cluster should be created
+
+STEP 2: Install the bellow tools in any machine which we want run k8s controller.
+        a. install aws cli and configure with above IAM account
+        b. kops 
+            Linux:
+                curl -LO https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
+                chmod +x kops-linux-amd64
+                sudo mv kops-linux-amd64 /usr/local/bin/kops
+
+            Mac: brew update && brew install kops
+        c. kubectl 
+
+STEP 3: Create an S3 bucket to store your clusters state
+        a. Trough cli 
+            aws s3api create-bucket --bucket <bucket_name> --create-bucket-configuration LocationConstraint=<aws_region>       
+        b. We can also create in aws console 
+
+STEP 4: Create cluster 
+        kops create cluster --yes --state=<bucket_name> \
+                                  --zones=<aws_zone> \
+                                  --node-count=<number_of_worker_nodes> \
+                                  --node-size=t2.micro \
+                                  --master-size=t2.medium \
+                                  --name=<cluster_name>
+        
+        optional: --master-count <number_of_master_nodes>
+                    (by default 1 master)
+
+        ex: kops create cluster --yes --state=s3://kops-store-9108909383 --zones=ap-south-1a --node-count=2 --node-size=t2.micro --master-size=t2.medium --name=k8s.local
+
+STEP 5: Useful kops command for K8S cluster 
+        1. validate: kops validate cluster
+        2. List your clusters with: kops get cluster
+        3. Edit this cluster with: kops edit cluster <cluster_name>
+        4. To delete your cluster: kops delete cluster <cluster_name> --yes
+
+STEP 6: Set kubectl context to K8S kops cluster 
+        kubectl config set-context <cluster_name>
+        kubectl get all -A
+
+Documentation: https://kubernetes.io/docs/setup/production-environment/tools/kops/
+
+HPA and VPA 
+	Metric server 
+	- Metrics Server collects resource metrics from Kubelets and exposes them in Kubernetes 
+	  API server through Metrics API for use by Horizontal Pod Autoscaler and Vertical Pod Autoscaler.
+        - kubectl top command use Metrics API to list the resource utilization of all pods. 
+	- Metrics Server is not meant for non-autoscaling purposes like we wont forward these metrics data to monitoring tools. 
+
+	1. Goto kubernetes-sigs/metric-server GitHub repo and install the metric server 
+	2. If metric server is not running and probe failure 
+		Add the below to metric-server deployment 
+			
+			- --metric-resolution=15s
+        		command:
+        		- /metrics-server
+        		- --kubelet-insecure-tls
+        		- --kubelet-preferred-address-types=InternalIP 
+				
+    HPA (Horizontal pod autoscaler )
+	- HPA will automatically scales the number pf pod replicas using deployment, replicates, statefulSet based on CPU/memory threshold.
+	- We need metric-server as a source for resource monitor for HPA
 
 
