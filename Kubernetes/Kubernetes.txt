@@ -1192,7 +1192,7 @@ STEP 4: Create cluster
         optional: --master-count <number_of_master_nodes>
                     (by default 1 master)
 
-        ex: kops create cluster --yes --state=s3://kops-store-9108909383 --zones=ap-south-1a --node-count=2 --node-size=t2.micro --master-size=t2.medium --name=k8s.local
+        ex: kops create cluster --yes --state=s3://kops-store-9108909383 --zones=ap-south-1a --node-count=5  --master-count=3 --node-size=t2.micro --master-size=t2.medium --name=k8s.local
 
 STEP 5: Useful kops command for K8S cluster 
         1. validate: kops validate cluster
@@ -1222,7 +1222,7 @@ HPA and VPA
         		- /metrics-server
         		- --kubelet-insecure-tls
         		- --kubelet-preferred-address-types=InternalIP 
-				
+
     HPA (Horizontal pod autoscaler )
 	- HPA will automatically scales the number pf pod replicas using deployment, replicates, statefulSet based on CPU/memory threshold.
 	- We need metric-server as a source for resource monitor for HPA
