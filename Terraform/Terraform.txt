@@ -127,6 +127,10 @@ tarraform destroy
 			terraform destroy -target <resource_type>.<resource_name>
 			example: terraform destroy -target aws_instance.ec2_ubuntu
 
+Terraform refresh 
+	- Terraform refresh will find the updates done in the cloud resources by comparing the changes with state file.	
+	- This won't modify your real remote objects, but it will modify the the Terraform state.
+
 terraform validate 
 	- This is to validate the syntax of the terraform scripts in a project.	
 
@@ -187,7 +191,6 @@ Provisioners
 		     host = "<ip>"				
 		}	
 	
-
 	file 
 	    - The file Provisioner is used to copy file or directories from terraform project to cloud 
 	      compute resource.
@@ -197,3 +200,52 @@ Provisioners
 	    - The remote-exec Provisioner is used to run command or script from terraform project to cloud 
 	      compute resource.
 	    - This provisioner needs a connection to cloud resource.
+
+Terraform module 
+	All the terraform scripts in a folder is called a module 
+
+	Root module 
+	- The .tf files in the main working directory is root module where we have .terrform folder 	
+	  or .tfstate local state file 
+	- Where we run terraform init 
+	- Every terraform script should be in a module.
+
+	Child module 
+	- Terraform scripts defined in a sub-folder inside root module
+	- We can segregate the scripts instead writing every this in same script or same root module.
+	- We can reuse the child modules in other projects also.
+	- These are always user defined module already available in github we can use them.
+
+Taint 
+	- The terraform taint command os used to mark a terraform managed resource as tainted, which means 
+	  the resource to be destroyed and recreated in the next apply.
+	- Taint will not mark the actual resource in the cloud but it marks in the state file.
+	
+	To list resource in state 
+		terraform state list
+	To taint a resource 
+		terraform taint <terra_arn>
+
+Terraform workspace 
+	- workspace are a way of managing different set of statefiles which are independent to 
+	  each other.
+	- Every configuration should be in a workspace.
+	- "default" is the default workspace in terraform 
+	
+	To list workspace
+		terraform workspace list
+	
+	To create workspace 
+		terraform workspace new <workspace_name>
+
+	To switch between workspace
+		terraform workspace select <workspace_name>
+	
+	To delete workspace 
+		terraform workspace delete <workspace_name>
+
+	Usage: 
+	   -  We can deploy different version of terraform scripts with states associated with it.
+	   -  We can maintain different set of infrastructure with same terraform repo with different 
+	      state files.
+	   -  We can deploy based on environment categorisation.		
