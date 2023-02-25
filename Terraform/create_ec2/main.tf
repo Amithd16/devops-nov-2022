@@ -2,11 +2,13 @@ module "create_sg" {
     source = "./modules/create_sg"
     sg_name = "allow_http"
 }
+
 module "create_pem" {
     source = "./modules/create_key"
     key_name = "Terra_key"
     key_path = "./keys/Terra_key.pem"
 }
+
 module "create_ec2" {
     source = "./modules/create_ec2"
     ec2_type = "t2.micro"

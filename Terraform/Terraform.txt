@@ -211,13 +211,14 @@ Terraform module
 	- Every terraform script should be in a module.
 
 	Child module 
-	- Terraform scripts defined in a sub-folder inside root module
-	- We can segregate the scripts instead writing every this in same script or same root module.
+	- Terraform scripts defined in a sub-folder inside root module which is called local child module.
+	- We can segregate the scripts instead writing every thing in same script or same root module.
 	- We can reuse the child modules in other projects also.
 	- These are always user defined module already available in github we can use them.
+	- We can 
 
 Taint 
-	- The terraform taint command os used to mark a terraform managed resource as tainted, which means 
+	- The terraform taint command is used to mark a terraform managed resource as tainted, which means 
 	  the resource to be destroyed and recreated in the next apply.
 	- Taint will not mark the actual resource in the cloud but it marks in the state file.
 	
@@ -248,4 +249,8 @@ Terraform workspace
 	   -  We can deploy different version of terraform scripts with states associated with it.
 	   -  We can maintain different set of infrastructure with same terraform repo with different 
 	      state files.
-	   -  We can deploy based on environment categorisation.		
+	   -  We can deploy based on environment based categorisation.		
+
+
+Terraform Backend 
+	
