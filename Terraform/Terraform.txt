@@ -251,6 +251,139 @@ Terraform workspace
 	      state files.
 	   -  We can deploy based on environment based categorisation.		
 
+Terraform - Destroy particular resource/module 
+	1. To destroy one resource 
+		terraform destroy --target <resource_type>.<resource_name>
 
-Terraform Backend 
+	2. To destroy multiple resources (use multiple --target option)
+		terraform destroy --target <resource_type>.<resource_name>  --target <resource_type1>.<resource_name2>
 	
+Terraform Backend 
+	Remote state (Backend) 
+		Instead of keeping state file in local we can keep to in a remote location 
+		such as s3, etcd, 
+
+terraform settings 
+	- used for specifying provider requirements. 
+	- we can restrict the provider version.
+	- we configure backend in this settings 
+	- we use terraform block 
+	- we can control the terraform version.
+	- default file terraform.tf / versions.tf 	
+		
+		terraform {
+			
+		}	
+
+data source / data resource 
+	- A data source is used to get the information dynamically from cloud.
+	- This block is read-only and this will be always executed on every plan and apply.
+	- we can query the required information and filter the field we want.
+
+Null resource 		
+	- The null resoruce will have the complete lifecycle support but there will be no change in the cloud configurations.
+	- We can use triggers to collect the data of some resources.
+	- We can use connections to connect ot resoruce using provisioners.
+	- The triggers argument allows specifying an arbitory set of values only when changed, triiger will update the value.
+	
+		resoruce "null_resource" "<resource_name>" {
+			
+		}
+
+null_data_resource 
+	- This block we are not using in our company we use data block instead of this.	
+
+terraform.tfvars vs variables.tf 
+	- variables.tf we can have variable block which acts as input to our terraform scripts.
+	- tf.vars is a way defining the default value to input variables.
+
+	we use variables.tf to declare input variables and we use tf.vars to assign default value to input variables.	
+
+Terraform import  (Importing existing aws resource to terraform configuration/scripts)
+	- we are using terraforming tool in our company to import the existing configurations. 
+	  Install terraforming in RHEL/Centos 
+		(https://github.com/dtan4/terraforming)		
+			sudo yum install rubygems
+			sudo gem install terraforming
+
+Dependency (resource/module Dependency)
+	- Meaning a resource need to be executed only after the completion of execution of another resource.
+	
+	We can do this in 2 ways 
+		1. Explisit Dependency way using depends_on 
+			depends_on = [
+    			<resource_type>.<resource_name>
+  			]
+
+		2. Implisit Dependency
+			- Just reference the output of one resource/module to another 
+			- Terraform will wait for the resource to be executed to get the value and assign it to 
+			   calling resource.
+
+
+Terraform loops (count and for_each)	
+	resource "null_resource" "loop_simple" {
+		count = 2 
+	}
+	
+	output "loop_out" {
+		value = null_resource.loop_simple
+	}
+	
+	
+	List count example
+	
+	locals {
+		names = ["bucket1","bucket2","bucket3","bucket4"]
+	}
+	
+	resource "null_resource" "names" {
+		count = length(local.names)
+		triggers = {
+			name = local.names[count.index]
+		}
+	}
+	
+	output "list_out" {
+		value = null_resource.names
+	}
+	
+	List for_each example
+	
+	locals {
+		names = ["bucket1","bucket2","bucket3","bucket4"]
+	}
+	
+	resource "null_resource" "names" {
+		for_each = toset(local.names)
+		triggers = {
+			name = each.value
+		}
+	}
+	
+	output "list_out" {
+		value = null_resource.names
+	}
+	
+	Map for_each example
+	
+	locals {
+		names = { 
+			bucket1 = "region1"
+			bucket2 = "region2"
+			bucket3 = "region3"
+			bucket4 = "region4"
+		}
+	}
+	
+	resoruce "null_resource" "names" {
+		for_each = local.names
+		triggers = {
+			bucket = each.key
+			region = each.value
+		}
+	}
+	
+	output "list_out" {
+		value = null_resource.names
+	}

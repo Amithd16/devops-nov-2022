@@ -1,0 +1,26 @@
+
+Introduce yourself/ tell me about your work / Explain what you have done in your project?
+
+I'm working as a DevOps engineer, I have experience with setting up CI/CD CI using jenkins and I have experience in writing jenkins declarative groovy. I have experience working with microservice applications with tolls Docker - Dockerfile, build and multi-stage build .....
+
+
+
+
+
+CI/CD
+
+As soon as the development team pushes the code to GitHub Jenkins pipeline will be triggered it has three stages build, deploy and test, stage, in the build stage it will pull the source code and we create docker images, In the deploy stage we deploy the image to Kubernetes cluster using helm charts, In the testing stage we run tets line sanity and regression which are given by the testing team, if three are any test failures will be taken care by test engineers if there is any pipeline integration issuer we take care all this pipeline written in the Jenkins files and libraries, I have also experience writing shell scripting to do the automation of the manual tasks and repetitive tasks, working on AWS cloud services like EC2, S3, VPC, Load balancer, Autoscaling, Cloud watch, cloud trail, Route53, KMS, etc. I have worked on docker I have written docker files and optimized docker image size using multistage builds and took security measures while building docker image, I have written YMAL definition files for multiple Kubernetes objects like deployment, service, deamonset, pv, pvc, config maps, etc to deploy and manage microservices in multiple environments like DEV, STAGE, QA in  Kubernetes clusters if there are any deployment issues troubleshooting and finding the root cause and resolving them. I have automated infrastructure provisioning and managing in AWS public cloud using terraform scripts from scratch and I have used Ansible to install and uninstall software on 100s of servers in a single run.
+
+
+Ansible - 
+
+6 Years 
+	Git, Linux, BASH scripting, Jenkins - 6 years (Rating 9) 
+	Kubernetes, Terraform - 3-4 Years (Rating 8)
+	AWS - 4 years (Rating 8)
+	Helm, Ansible - 2 Years 
+
+Rating (10)			
+8
+
+
