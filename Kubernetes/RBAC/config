@@ -1,0 +1,22 @@
+apiVersion: v1
+clusters:
+- cluster:
+    insecure-skip-tls-verify: true
+    server: https://65.2.171.3:6443
+  name: my-k8s
+
+users:
+- name: k8s-sa
+  user:
+    token: eyJhbGciOiJSUzI1NiIsImtpZCI6Ik5XeUd0bXRaVi1vdVd2ZE54SGZQaTFqeUJ3eERqR1ZkREU3dnk3emwzczAifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6Ims4cy1zYS1zZWNyZXQiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiazhzLXNhIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiMzdjOTI5YWEtOTQ0ZC00NTA0LWEwZDYtZWQ0NzRhN2I5NTExIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmRlZmF1bHQ6azhzLXNhIn0.bKiskc1YjX4_XtZo3MVLftXn-X0KemoW3CSTEA9nQBbOXOCKBWOWjxYVBuxcDJsz499KyFWCzPmxRGkPHelrVe0qCl1V_qXh9aKdregDyNPQGyKG7aYSBB5nQYcph9ldqIEX-I1IC1oiL1hxZ6UA2MvfKoFw17CvbNORbaVLk9xEm8TvdPzMkXV6gxnBb6sh-bqb4HB4PQRFGnftDAydL6ZS42JQorsJK2ESC32BgbVt5gBSG6K1O3A0cN3UZ0wV6SBbDr1DNwArF--7LjiiLycXoxh2Px5LL8Uld6zItnqh_8PVAxWbxMLNIRfMz7sT_VuECyi4GYcXiUq5KddDAg
+
+contexts:
+- context:
+    cluster: my-k8s
+    user: k8s-sa
+  name: k8s-main
+
+  
+current-context: k8s-main
+kind: Config
+preferences: {}

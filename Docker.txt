@@ -172,7 +172,9 @@ To create a docker container
 		  -d , detached mode (creating container in background)
 		  --name , User defined container name 
 		  --rm, Once the container stops it will be deleted.	
-		  -e, --env,  To create environment variable inside the container.  		
+		  -e, --env,  To create environment variable inside the container.  
+		  -p, --publish <host_port>:<container_port>
+		  --network, Network in which we want container to be created		
 		( Image name at the end of the command always. 
 		  If we want to add command for execution then command 
 		  should be at end followed by image name)
@@ -277,12 +279,204 @@ Dockerfile
 	Assignment: Can we override ENTRYPOINT at runtime ? (yes, How?)
 	
 	EXPOSE <port>	
-	
+		- used to expose a port to the internal docker network 
+		- This makes the container port accessible by all the other containers in the 
+		  same docker network. 
+
 	IQ: 
 		What is the difference b/w CMD and ENTRYPOINT ?	
 		What is the difference b/w COPY and ADD ?
 		What is the difference b/w EXPOSE and PUBLISH ?
 		What is the difference b/w ENV and ARG ?
-			
-Docker Network 
+
+Dangling images 
+	Dangling images are images which are created while executing Dockerfile instructions 
+	in the image build process and these images have no relation with any other images or 
+	containers even they will not have repository and tag name.
+		To list only dangling images 
+			docker images -f dangling=true 
+		To delete dangling images 
+			docker image prune 
+				(OR)
+			docker rmi $(docker images -f dangling=true -q)
 		
+docker system prune
+	This will remove:
+  	- all stopped containers
+  	- all networks not used by at least one container
+  	- all dangling images
+ 	- all dangling build cache
+
+Docker Network
+	Publish 
+	   - Publish is used to bind the container port to any available host machine port.
+	   - publish will automatically exposes port 
+		
+		publish = EXPOSE + port mapping to the host machine port 	
+	     
+	     To publish a port 
+		docker run -p <host_port>:<container_port> .....	
+	     
+             -P publish_all 
+		It binds all the exposed ports of the container to random host machine port
+	     
+	     Range of ports 
+		Docker will search for available port in the range to bind to container port.
+		  1) many to one: docker run -p 8080-8090:8080
+		  2) many to many:  docker run -p 8080-8085:80-85
+			always the total number of host range ports should be same as container 
+			ports range 
+			 			
+            	
+    	To list docker networks 
+		docker network ls 
+	Bridge 
+	    - This is a private internal network created by docker on host machine by name 
+	      docker0
+	    - This is default network in docker which means when ever we create a container 
+              without any network configuration it will be created in default bridge network.
+	    - The default ip series is 172.17.0.1
+	    - All the container in the same bridge network can communicate by default using 
+	      the ip address of the containers.
+		
+	    Custom bridge network 
+		To create custom bridge network 
+			docker network create --drive bridge my_bride
+		The advantage of using custom bridge is we can communicate between containers 
+		using container name and also ip address as this will main an own ip table.
+
+Assignment: How to communicate between containers which in different bridge network.
+
+	2) HOST 
+		This driver removes the extra layer of network isolation between docker and host 			
+		machine.
+		- Container created in this network are directly connected to host network.
+		- They share the all the host network and got same configuration as host 
+		  machine.
+		- As we handle host network docker publish will not work with network driver.
+			
+
+	3) None
+		- Containers are not attached to any network and they will not be having 
+		  network configurations.
+		- All the required network configuration should be done manually.
+
+Docker volumes 
+			
+	Bind mounts 
+		- We can mount host machine filesystem (files and directors) to a container.
+		- If path inside container not present docker will automatically creates it.
+		
+		docker run -v <host_path>:<container_path>
+	
+	Volumes 
+		- These are docker managed filesystem and we use docker commands to manage these 
+		  volumes.
+		- We can mount the volumes to multiple containers.
+		- Volumes are easier to manage, backup or migrate than bind mounts.
+		- Volumes supports multiple drivers which means we can mount.
+		- Default location of docker volume /var/lib/docker/volumes 
+		To create a docker volume 
+			docker volume create <volume_name>
+		To list docker volumes 
+			docker volume ls
+		To delete docker volume
+			docker volume rm <volume_name>
+
+		docker run -v <volume_name>:<container_path>
+
+
+docker volume create \
+    --driver local \
+    --opt type=nfs \
+    --opt o=addr=fs-0928767bcf17c9ed6.efs.ap-south-1.amazonaws.com,rw,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 \
+    --opt device=:/ efs 	
+
+Docker container lifecycle - stages - statuses 
+	Running - If main command is running without any error then container will get this state 
+	Exited - If main command / process of the container failed due to some error 
+	Paused - If we pause a container 
+	Created - If container is created but the main command is not yet started.
+	Dead - If Docker daemon fail to create / stop the container (Due to full RAM usage of 
+	       host machine)
+	Restarting - When we restart the main command of container.
+
+
+Namespaces and cgroups
+	- Docker uses linux namespaces to provide isolated workspace for processes called
+	  conatainer
+	- when a container is created, docker creates a set of namespaces for it and provides 
+	  a layer of isolation for container.
+	- Each container run in a different namespace 
+	
+	namespace (To list - lsns)
+		cgroups 
+			- Linux OS uses cgroups to manage the availale hardware resoruces such as 
+			  cpu, RAM, Disk, I/O.
+			- we can control tje access and also we can apply the limitations 
+
+			To list - lscgroup	
+		pid - namespace for managing processes (process isolation)
+		user - namespace for non-root user on linux.
+		uts - namespace for unix timesharing system which isolates kernel and version identifiers,
+			  time bonding of process.
+		ipc - (interprocess communication) namespace for managing the process communication.	  
+		mnt - namespace for managing filesystem mounts.
+		net - namespace for managing network interfaces.
+
+
+Docker Architecture 
+
+	Docker Daemon 
+		- A background process that manages docker images, containers, network and volumes.
+		- This Daemon constantly listens for docker API request and processes them.
+	
+	Docker REST API 
+		- API which is used by applications to interact with the docker daemon. 
+		
+	Docker CLI 
+		- It is a command line interface for interacting with docker daemon through
+		  REST api.
+	
+	Docker Objects 
+		- Images, Containers, Networks, Vloumes
+
+Benefits of Docker 
+
+	Flexible: 
+		Complex applications cab be divided and containerised in small competents called 
+		microservice. 
+	
+	Lightweight: 
+		Containers share the machine’s OS system kernel and therefore do not require 
+		
+
+
+
+Docker multistage build	
+
+	How to optimise docker build process ?
+	How to reduce the size of the docker image or container ? 
+
+	After docker 1.6 version docker released this option.
+	1. There are 2 problems with the normal build process 
+			1. Size: challenge is to keep the image and its containers size as minimal as  		
+			   possible.
+			2. larger the surface area more the application is vulnerable to attacks. 
+	
+		- Multistage build allows us to define multiple FROM in same Dockerfile.
+		- Dependency between multiple FROM is maintained by naming FROM using 
+		  AS keyword and we can refer this name in another FROM.
+
+				FROM <base_image> AS <STAGE_NAME>
+				
+		- Only the final FROM image is created leaving back all the other FROM.
+		- Copy only the required files from the named FROM stage like below.
+				FROM final_build
+				COPY --from <STAGE_NAME> <src_named_stage> <dest>
+	
+	2. Always try to use the slim / alpine / stretch version of base image instead 
+	   of using the fully loaded base image.
+
+
+	
